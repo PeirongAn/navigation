@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #141414;
+  color: white;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #262626;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #303030;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #177ddc;
+}
+
+/* antd 组件暗色主题覆盖 */
+.ant-modal-content {
+  background-color: #1f1f1f !important;
+}
+
+.ant-modal-header {
+  background-color: #1f1f1f !important;
+}
+
+.ant-modal-title {
+  color: #8c8c8c !important;
+}
+
+.ant-modal-close {
+  color: #8c8c8c !important;
+}
+
+.ant-modal-close:hover {
+  color: #177ddc !important;
+}
+
+/* 输入框暗色主题 */
+.ant-input,
+.ant-input-textarea {
+  background-color: #262626 !important;
+  border-color: #303030 !important;
+  color: white !important;
+}
+
+.ant-input::placeholder,
+.ant-input-textarea::placeholder {
+  color: #8c8c8c !important;
+}
+
+.ant-input:hover,
+.ant-input-textarea:hover {
+  border-color: #177ddc !important;
+}
+
+.ant-input:focus,
+.ant-input-textarea:focus {
+  border-color: #177ddc !important;
+  box-shadow: 0 0 0 2px rgba(23, 125, 220, 0.2) !important;
+}
+
+/* 按钮暗色主题 */
+.ant-btn[disabled] {
+  background-color: #262626 !important;
+  border-color: #303030 !important;
+  color: #8c8c8c !important;
+}
+
+/* 浅色主题样式 */
+.light-theme {
+  /* 基础样式 */
+  background-color: white;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* antd 组件浅色主题覆盖 */
+.light-theme .ant-modal-content {
+  background-color: white !important;
+}
+
+.light-theme .ant-modal-header {
+  background-color: white !important;
+}
+
+.light-theme .ant-modal-title {
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .ant-modal-close {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+.light-theme .ant-modal-close:hover {
+  color: #1890ff !important;
+}
+
+/* 输入框浅色主题 */
+.light-theme .ant-input,
+.light-theme .ant-input-textarea {
+  background-color: white !important;
+  border-color: #d9d9d9 !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.light-theme .ant-input::placeholder,
+.light-theme .ant-input-textarea::placeholder {
+  color: rgba(0, 0, 0, 0.45) !important;
+}
+
+.light-theme .ant-input:hover,
+.light-theme .ant-input-textarea:hover {
+  border-color: #1890ff !important;
+}
+
+.light-theme .ant-input:focus,
+.light-theme .ant-input-textarea:focus {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+/* 按钮浅色主题 */
+.light-theme .ant-btn[disabled] {
+  background-color: #f5f5f5 !important;
+  border-color: #d9d9d9 !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Modal 暗色主题 */
+.ant-modal-dark .ant-modal-content {
+  background-color: #1f1f1f !important;
+}
+
+.ant-modal-dark .ant-modal-header {
+  background-color: #1f1f1f !important;
+  border-bottom-color: #303030 !important;
+}
+
+.ant-modal-dark .ant-modal-title {
+  color: white !important;
+}
+
+.ant-modal-dark .ant-modal-close {
+  color: #8c8c8c !important;
+}
+
+.ant-modal-dark .ant-modal-close:hover {
+  color: #177ddc !important;
+}
+
+.ant-modal-dark .ant-modal-body {
+  color: white !important;
+}
+
+/* 浅色主题滚动条 */
+.light-theme ::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: #1890ff;
+}
+
+/* 添加全局过渡效果 */
+body,
+.ant-card,
+.ant-input,
+.ant-btn,
+.ant-modal-content,
+.ant-modal-header {
+  transition: all 0.3s ease-in-out !important;
+}
+
+/* 确保某些元素不受过渡影响 */
+.transition-none {
+  transition: none !important;
+} 

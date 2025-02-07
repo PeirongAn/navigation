@@ -1,0 +1,18 @@
+src/
+  ├── components/
+  │   ├── LeftPanel/
+  │   │   ├── TaskSelector.tsx
+  │   │   └── EnvironmentView.tsx
+  │   ├── RightPanel/
+  │   │   ├── AgentChat.tsx
+  │   │   ├── NavigationInfo.tsx
+  │   │   └── ChatInput.tsx
+  │   └── ResizeableDivider.tsx
+  ├── store/
+  │   ├── index.ts
+  │   └── slices/
+  │       ├── taskSlice.ts
+  │       └── chatSlice.ts
+  ├── types/
+  │   └── index.ts
+  └── App.tsx 
