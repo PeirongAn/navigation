@@ -299,7 +299,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
             className={`w-full rounded ${
               isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
             }`}
-            src={video}
+            src={`/resource${video}`}
           >
             <div className={isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}>
               您的浏览器不支持视频播放。
