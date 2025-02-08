@@ -1,11 +1,9 @@
 [
   {
-    "id": "2",
-    "timestamp": 2,
     "type": 0,
     "imagesCandidate": [
       {
-        "path": "/images/2/point1.jpg",
+        "path": "/images/point1.jpg",
         "description": "电梯"
       },
       {
@@ -19,8 +17,10 @@
       "/images/2/surrounding3.jpg",
       "/images/2/surrounding4.jpg"
     ],
-    "currentImage": "/images/2/current.jpg",
+    "currentImage": "/images/point1.jpg",
+    "video": "/videos/test.mp4",
     "currentDescription": "你在一楼大厅，需要选择上楼方式",
     "text": "我选择乘坐电梯，这样更快捷"
+
   }
 ] 

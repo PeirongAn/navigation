@@ -56,7 +56,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
     if (video) {
       // 创建一个临时视频元素来生成缩略图
       const tempVideo = document.createElement('video');
-      tempVideo.src = video;
+      tempVideo.src = `/resource${video}`;
       tempVideo.crossOrigin = 'anonymous'; // 如果视频来自其他域名
 
       tempVideo.addEventListener('loadeddata', () => {
@@ -149,7 +149,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                           onClick={() => setSelectedImage(path)}
                         >
                           <img 
-                            src={path}
+                            src={`/resource${path}`}
                             alt={`可选点 ${startIndex + i + 1}`}
                             className="w-full h-full object-cover"
                           />

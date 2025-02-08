@@ -55,10 +55,11 @@ const EnvironmentView: React.FC = () => {
         <div className={`h-[33vh] rounded ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`}>
           {currentInfo?.currentImage ? (
             <img 
-              src={currentInfo.currentImage} 
+              src={`/resource${currentInfo.currentImage}`} 
               alt="当前视角"
               className="w-full h-full object-contain"
             />
+
           ) : (
             <div className={`h-[33vh] flex items-center justify-center ${
               isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-400'
@@ -97,7 +98,7 @@ const EnvironmentView: React.FC = () => {
               }`}>
                 <div className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`}>
                   <img 
-                    src={image} 
+                    src={`/resource${image}`} 
                     alt={`周边环境 ${startIndex + i + 1}`}
                     className="w-full h-full object-cover"
                   />

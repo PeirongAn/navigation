@@ -17,3 +17,20 @@
 - 项目管理: git
 - 代码规范: ESLint
 - 代码格式化: Prettier
+# 构建镜像
+## 先构建基础镜像
+docker build -t ai-navigation-base -f Dockerfile.base .
+
+## 再构建最终镜像
+docker build -t ai-navigation-dev .
+
+# 运行容器并挂载源代码目录
+docker run -d --name ai-navigation -p 8081:8081 -v ./src:/app/src  --add-host=host.docker.internal:host-gateway ai-navigation-dev
+
+# 进入容器
+docker exec -it ai-navigation bash
+
+# 在容器内修改代码后
+
+npm run build  # 重新构建
+nginx -s reload  # 重新加载 nginx 配置

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '../../store/slices/chatSlice';
 import { RootState } from '../../store';
 import { useTheme } from '../../contexts/ThemeContext';
+import { wsService } from '../../services/websocket';
 
 const ChatInput: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -19,6 +20,11 @@ const ChatInput: React.FC = () => {
 
   const handleSend = () => {
     if (!message.trim() || !canSendMessage) return;
+    
+    // 发送消息到 WebSocket
+    wsService.sendMessage('user_input', message.trim());
+    
+    // 添加到本地聊天记录
     dispatch(addMessage(message.trim()));
     setMessage('');
   };
