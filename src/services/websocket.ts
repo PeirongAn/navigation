@@ -1,10 +1,18 @@
 type MessageHandler = (data: any) => void;
 
+type MessageLog = {
+  type: 'send' | 'receive';
+  timestamp: number;
+  data: any;
+};
+
 class WebSocketService {
   private static instance: WebSocketService;
   private ws: WebSocket | null = null;
   private messageHandlers: Map<string, MessageHandler> = new Map();
   private errorHandlers: Set<() => void> = new Set();
+  private messageLogs: MessageLog[] = [];
+  private logHandlers: Set<(logs: MessageLog[]) => void> = new Set();
   
   // 私有构造函数用于单例模式，不需要初始化逻辑
   private constructor() {
@@ -18,11 +26,11 @@ class WebSocketService {
     return WebSocketService.instance;
   }
 
-  connect(url = 'ws://localhost:8080/ws') {
+  connect() {
     if (this.ws?.readyState === WebSocket.OPEN) return;
 
     try {
-      this.ws = new WebSocket(url);
+      this.ws = new WebSocket(window.websocketURL);
 
       this.ws.onopen = () => {
         console.log('WebSocket连接已建立');
@@ -37,6 +45,7 @@ class WebSocketService {
           if (handler) {
             handler(payload);
           }
+          this.addMessageLog('receive', event.data);
         } catch (error) {
           console.error('处理WebSocket消息失败:', error);
         }
@@ -61,7 +70,9 @@ class WebSocketService {
 
   sendMessage(type: string, payload?: any) {
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type, payload }));
+      const message = { type, payload };
+      this.ws.send(JSON.stringify(message));
+      this.addMessageLog('send', JSON.stringify(message));
     } else {
       console.error('WebSocket未连接');
     }
@@ -88,6 +99,34 @@ class WebSocketService {
       this.ws.close();
       this.ws = null;
     }
+  }
+
+  isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
+  private addMessageLog(type: 'send' | 'receive', data: string) {
+    const log = {
+      type,
+      timestamp: Date.now(),
+      data
+    };
+    this.messageLogs.push(log);
+    this.logHandlers.forEach(handler => handler(this.messageLogs));
+  }
+
+  addLogHandler(handler: (logs: MessageLog[]) => void) {
+    this.logHandlers.add(handler);
+    handler(this.messageLogs); // 立即发送当前日志
+  }
+
+  removeLogHandler(handler: (logs: MessageLog[]) => void) {
+    this.logHandlers.delete(handler);
+  }
+
+  clearLogs() {
+    this.messageLogs = [];
+    this.logHandlers.forEach(handler => handler(this.messageLogs));
   }
 }
 

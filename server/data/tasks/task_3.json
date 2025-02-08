@@ -1,0 +1,53 @@
+[
+  {
+    "type": 0,
+    "imagesCandidate": [
+      {
+        "path": "/images/3/point1.jpg",
+        "description": "会议室A"
+      },
+      {
+        "path": "/images/3/point2.jpg",
+        "description": "会议室B"
+      },
+      {
+        "path": "/images/3/point3.jpg",
+        "description": "休息区"
+      }
+    ],
+    "imagesSurrounding": [
+      "/images/3/surrounding1.jpg",
+      "/images/3/surrounding2.jpg",
+      "/images/3/surrounding3.jpg",
+      "/images/3/surrounding4.jpg"
+    ],
+    "currentImage": "/images/3/current.jpg",
+    "currentDescription": "你在办公区域，周围有多个会议室和休息区",
+    "text": "根据环境观察，我决定先去会议室A"
+  },
+  {
+    "id": "2",
+    "timestamp": 2,
+    "type": 1,
+    "imagesCandidate": [
+      {
+        "path": "/images/3/point4.jpg",
+        "description": "投影区"
+      },
+      {
+        "path": "/images/3/point5.jpg",
+        "description": "讨论区"
+      }
+    ],
+    "imagesSurrounding": [
+      "/images/3/surrounding5.jpg",
+      "/images/3/surrounding6.jpg",
+      "/images/3/surrounding7.jpg",
+      "/images/3/surrounding8.jpg"
+    ],
+    "currentImage": "/images/3/current2.jpg",
+    "currentDescription": "你现在在会议室A内，需要选择具体位置",
+    "video": "/videos/path_1_to_2.mp4",
+    "text": "会议室里有投影区和讨论区，请帮我选择合适的位置"
+  }
+] 

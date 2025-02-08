@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Select, Button, Input } from 'antd';
+import { Card, Select, Button, Input, Tag, Modal } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useTheme } from '../../contexts/ThemeContext';
 import { clearNavigationInfos } from '../../store/slices/navigationSlice';
 import { wsService } from '../../services/websocket';
 
 const { Option } = Select;
+
+type TaskStatus = '未选择' | '未开始' | '进行中' | '已结束';
 
 interface TaskDescription {
   description: string;
@@ -14,41 +16,73 @@ interface TaskDescription {
 const TaskSelector: React.FC = () => {
   const [taskId, setTaskId] = useState<string>();
   const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [status, setStatus] = useState<TaskStatus>('未选择');
   const dispatch = useDispatch();
   const { isDarkMode } = useTheme();
 
-  // 生成20个任务选项
-  const taskOptions = Array.from({ length: 20 }, (_, i) => ({
-    value: `task_${i + 1}`,
-    label: `任务 ${i + 1}`
+  // 使用真实任务数据
+  const taskOptions = (window.taskInfos || []).map(info => ({
+    value: info.id,
+    label: `任务 ${info.id}`,
+    description: info.descriptionZh
   }));
 
   useEffect(() => {
-    // 添加任务描述处理器
-    wsService.addMessageHandler('task_description', (data) => {
-      setDescription(data.description);
-      setLoading(false);
+    wsService.addMessageHandler('finish', () => {
+      setDisabled(false);
+      setStatus('已结束');
+      Modal.success({
+        title: '任务完成',
+        content: '当前任务已执行完毕，您可以重新开始或选择其他任务。',
+        okText: '确定',
+        className: isDarkMode ? 'ant-modal-dark' : '',
+      });
     });
-
     return () => {
-      wsService.removeMessageHandler('task_description');
+      wsService.removeMessageHandler('finish');
     };
-  }, []);
+  }, [isDarkMode]);
 
   const handleTaskChange = (value: string) => {
     setTaskId(value);
-    setLoading(true);
+    setDescription(taskOptions.find(option => option.value === value)?.description || '');
+    setStatus('未开始');
     dispatch(clearNavigationInfos());
-    
-    // 发送获取任务描述的消息
-    wsService.sendMessage('get_task_description', { taskId: value });
   };
 
   const handleStartTask = () => {
     if (taskId) {
-      // 发送开始任务的消息
-      wsService.sendMessage('start_task', { taskId });
+      if (!wsService.isConnected()) {
+        Modal.error({
+          title: '连接失败',
+          content: '无法连接到服务器，请检查网络连接后重试。',
+          okText: '确定',
+          className: isDarkMode ? 'ant-modal-dark' : '',
+        });
+        return;
+      }
+      
+      dispatch(clearNavigationInfos());
+      wsService.sendMessage('start_task', taskId );
+      setDisabled(true);
+      setStatus('进行中');
+    }
+  };
+
+  const handleRestart = () => {
+    dispatch(clearNavigationInfos());
+    setStatus('未开始');
+    setDisabled(false);
+  };
+
+  const getStatusColor = () => {
+    switch (status) {
+      case '未选择': return isDarkMode ? 'gray' : 'default';
+      case '未开始': return 'blue';
+      case '进行中': return 'orange';
+      case '已结束': return 'success';
+      default: return 'default';
     }
   };
 
@@ -71,8 +105,9 @@ const TaskSelector: React.FC = () => {
             className="flex-1"
             value={taskId}
             onChange={handleTaskChange}
-            loading={loading}
-            disabled={loading}
+            disabled={disabled}
+            dropdownStyle={{ minWidth: '200px' }}
+            getPopupContainer={(trigger) => trigger.parentElement!}
           >
             {taskOptions.map(option => (
               <Option key={option.value} value={option.value}>
@@ -99,6 +134,18 @@ const TaskSelector: React.FC = () => {
             } hover:border-[#177ddc] focus:border-[#177ddc]`}
           />
         </div>
+        <div className="flex items-center gap-4">
+          <div className={`font-bold w-24 ${
+            isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-600'
+          }`}>
+            任务状态
+          </div>
+          <div className="flex items-center gap-2 flex-1">
+            <Tag color={getStatusColor()}>
+              {status}
+            </Tag>
+          </div>
+        </div>
         <Button 
           type="primary" 
           className={`w-full ${
@@ -106,15 +153,15 @@ const TaskSelector: React.FC = () => {
               'bg-[#177ddc] hover:bg-[#1765ad] border-[#177ddc]' : 
               'bg-[#1890ff] hover:bg-[#40a9ff] border-[#1890ff]'
           } text-white`}
-          disabled={!taskId || loading}
-          loading={loading}
+          disabled={!taskId || disabled}
           onClick={handleStartTask}
         >
-          开始执行
+          {status === '已结束' ? '重新开始' : '开始执行'}
         </Button>
       </div>
     </Card>
   );
 };
+
 
 export default TaskSelector; 

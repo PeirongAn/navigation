@@ -56,18 +56,7 @@ const ResizeableDivider: React.FC = () => {
       onMouseDown={handleMouseDown}
     >
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="flex flex-col gap-1">
-          {[0, 1, 2].map(i => (
-            <div 
-              key={i} 
-              className={`w-1 h-4 rounded-full ${
-                isDarkMode ? 
-                  'bg-[#177ddc]/50' : 
-                  'bg-[#1890ff]/50'
-              }`}
-            />
-          ))}
-        </div>
+       
       </div>
     </div>
   );

@@ -1,17 +1,19 @@
-import React from 'react';
-import { Layout, Switch } from 'antd';
-import { BulbOutlined, BulbFilled } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Layout, Switch, Button } from 'antd';
+import { BulbOutlined, BulbFilled, BugOutlined } from '@ant-design/icons';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import TaskSelector from './components/LeftPanel/TaskSelector';
 import EnvironmentView from './components/LeftPanel/EnvironmentView';
 import AgentChat from './components/RightPanel/AgentChat';
 import ResizeableDivider from './components/ResizeableDivider';
 import WebSocketClient from './components/WebSocketClient';
+import DebugDrawer from './components/DebugDrawer';
 
 const { Header } = Layout;
 
 const AppContent: React.FC = () => {
   const { isDarkMode, toggleTheme } = useTheme();
+  const [debugVisible, setDebugVisible] = useState(false);
 
   return (
     <Layout className={`h-screen flex flex-col ${isDarkMode ? 'bg-[#141414]' : 'bg-white'}`}>
@@ -27,14 +29,19 @@ const AppContent: React.FC = () => {
         </h1>
         
         {/* 主题切换开关 */}
-        <div className="flex items-center gap-2">
-          <BulbOutlined className={isDarkMode ? 'text-[#8c8c8c]' : 'text-[#1890ff]'} />
+        <div className="flex items-center gap-4">
+          <Button
+            type="text"
+            icon={<BugOutlined />}
+            onClick={() => setDebugVisible(true)}
+            className={isDarkMode ? 'text-white' : ''}
+          />
           <Switch
+            checkedChildren={<BulbOutlined />}
+            unCheckedChildren={<BulbFilled />}
             checked={isDarkMode}
             onChange={toggleTheme}
-            className={isDarkMode ? 'bg-[#177ddc]' : 'bg-[#1890ff]'}
           />
-          <BulbFilled className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'} />
         </div>
       </Header>
 
@@ -54,6 +61,10 @@ const AppContent: React.FC = () => {
           <AgentChat />
         </div>
       </div>
+      <DebugDrawer 
+        visible={debugVisible}
+        onClose={() => setDebugVisible(false)}
+      />
     </Layout>
   );
 };

@@ -1,12 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+
 interface ImageInfo {
   path: string;
   description: string;
 }
-interface NavigationInfo {
-  id: string; // '1'
-  timestamp: number; // index + 1
+interface NavigationInfoOrigin {
   type: 0 | 1; // 0: decision, 1: question
   imagesCandidate: ImageInfo[]; // 候选点图片
   imagesSurrounding: string[]; // 周围点图片
@@ -15,22 +14,27 @@ interface NavigationInfo {
   video?: string; // 路径回放视频
   text?: string; // agent回复text
 }
+interface NavigationInfo extends NavigationInfoOrigin {
+  id: string;
+  timestamp: number;
+}
 
 interface NavigationState {
   navigationInfos: NavigationInfo[];
   currentTimestamp: number | null;
 }
 
+
 // 默认导航数据
 const defaultNavigationInfos: NavigationInfo[] = [
   {
     id: '1',
     timestamp: 1,
-    type: 0, // 0 表示 decision
+    type: 0,
     imagesCandidate: [
       {
-        path: '/images/1/point1.jpeg',
-        description: '前方通道'
+        path: '/images/1/point1.jpg',
+        description: '前方走廊'
       },
       {
         path: '/images/1/point2.jpg',
@@ -38,11 +42,7 @@ const defaultNavigationInfos: NavigationInfo[] = [
       },
       {
         path: '/images/1/point3.jpg',
-        description: '左侧通道'
-      },
-      {
-        path: '/images/1/point4.jpg',
-        description: '后方出口'
+        description: '左转通道'
       }
     ],
     imagesSurrounding: [
@@ -51,26 +51,22 @@ const defaultNavigationInfos: NavigationInfo[] = [
       '/images/1/surrounding3.jpg',
       '/images/1/surrounding4.jpg'
     ],
-    currentImage: '/images/1/current.jpeg',
+    currentImage: '/images/1/current.jpg',
     currentDescription: '当前位置在房间的中心，面向北方',
-    text: '我决定向前移动，因为前方通道看起来更开阔'
+    text: '我选择继续向前走，因为前方走廊更宽敞'
   },
   {
     id: '2',
     timestamp: 2,
-    type: 1, // 1 表示 question
+    type: 1,
     imagesCandidate: [
       {
-        path: '/images/2/point1.jpeg',
-        description: '左转通道'
+        path: '/images/2/point1.jpg',
+        description: '左转'
       },
       {
         path: '/images/2/point2.jpg',
-        description: '右转房间'
-      },
-      {
-        path: '/images/2/point3.jpg',
-        description: '直行通道'
+        description: '右转'
       }
     ],
     imagesSurrounding: [
@@ -79,41 +75,34 @@ const defaultNavigationInfos: NavigationInfo[] = [
       '/images/2/surrounding3.jpg',
       '/images/2/surrounding4.jpg'
     ],
-    currentImage: '/images/2/current.jpeg',
-    currentDescription: '当前位置在房间的北侧，面向东方',
+    currentImage: '/images/2/current.jpg',
+    currentDescription: '当前位置在走廊中间，两侧都有岔路',
     video: '/videos/path_1_to_2.mp4',
-    text: '这里有三个可能的方向，我需要帮助决定下一步该往哪个方向走？'
+    text: '这里有两个选择，我需要帮助决定接下来往哪个方向走？'
   }
 ];
 
 const initialState: NavigationState = {
-  navigationInfos: defaultNavigationInfos,
-  currentTimestamp: defaultNavigationInfos[defaultNavigationInfos.length - 1].timestamp,
+  navigationInfos: [],
+  currentTimestamp: 0,
 };
 
 const navigationSlice = createSlice({
   name: 'navigation',
   initialState,
   reducers: {
-    addNavigationInfo: (state, action: PayloadAction<NavigationInfo>) => {
-      // 检查是否已存在相同时间戳的信息
-      const existingIndex = state.navigationInfos.findIndex(
-        info => info.timestamp === action.payload.timestamp
-      );
+    addNavigationInfo: (state, action: PayloadAction<NavigationInfoOrigin>) => {
+      const timestamp = state.navigationInfos.length + 1;
+      const navigationInfo: NavigationInfo = {
+        ...action.payload,
+        id: timestamp.toString(),
+        timestamp,
+      };
 
-      if (existingIndex !== -1) {
-        // 更新现有信息
-        state.navigationInfos[existingIndex] = action.payload;
-      } else {
-        // 添加新信息并按时间戳排序
-        state.navigationInfos.push(action.payload);
-        state.navigationInfos.sort((a, b) => a.timestamp - b.timestamp);
-      }
-
-      // 如果没有选中的时间戳，设置为最新的时间戳
-      if (!state.currentTimestamp) {
-        state.currentTimestamp = action.payload.timestamp;
-      }
+    
+      state.navigationInfos.push(navigationInfo);
+      state.currentTimestamp = navigationInfo.timestamp;
+      
     },
     setCurrentTimestamp: (state, action: PayloadAction<number>) => {
       state.currentTimestamp = action.payload;
