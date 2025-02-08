@@ -40,10 +40,14 @@ class WebSocketService {
       };
 
       this.ws.onmessage = (event) => {
+        if (event.data === 'pong') {
+          return;
+        }
         try {
           const data = JSON.parse(event.data);
           const { type, payload } = data;
           
+
           const handler = this.messageHandlers.get(type);
           if (handler) {
             handler(payload);
