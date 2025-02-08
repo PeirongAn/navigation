@@ -13,6 +13,7 @@ class WebSocketService {
   private errorHandlers: Set<() => void> = new Set();
   private messageLogs: MessageLog[] = [];
   private logHandlers: Set<(logs: MessageLog[]) => void> = new Set();
+  private pingInterval: NodeJS.Timeout | null = null;
   
   // 私有构造函数用于单例模式，不需要初始化逻辑
   private constructor() {
@@ -34,6 +35,8 @@ class WebSocketService {
 
       this.ws.onopen = () => {
         console.log('WebSocket连接已建立');
+        // 启动心跳
+        this.startPing();
       };
 
       this.ws.onmessage = (event) => {
@@ -58,6 +61,7 @@ class WebSocketService {
 
       this.ws.onclose = () => {
         console.log('WebSocket连接已关闭');
+        this.stopPing();
         this.errorHandlers.forEach(handler => handler());
         // 尝试重新连接
         setTimeout(() => this.connect(), 3000);
@@ -70,12 +74,17 @@ class WebSocketService {
 
   sendMessage(type: string, payload?: any) {
     if (this.ws?.readyState === WebSocket.OPEN) {
-      const message = { type, payload };
-      this.ws.send(JSON.stringify(message));
-      this.addMessageLog('send', JSON.stringify(message));
+      if (type === 'ping') {
+        this.ws.send(type);
+      } else {
+        const message = { type, payload };
+        this.ws.send(JSON.stringify(message));
+        this.addMessageLog('send', JSON.stringify(message));
+      }
     } else {
       console.error('WebSocket未连接');
     }
+
   }
 
   addMessageHandler(type: string, handler: MessageHandler) {
@@ -95,6 +104,7 @@ class WebSocketService {
   }
 
   disconnect() {
+    this.stopPing();
     if (this.ws) {
       this.ws.close();
       this.ws = null;
@@ -127,6 +137,20 @@ class WebSocketService {
   clearLogs() {
     this.messageLogs = [];
     this.logHandlers.forEach(handler => handler(this.messageLogs));
+  }
+
+  private startPing() {
+    console.log('启动心跳');
+    this.pingInterval = setInterval(() => {
+      this.sendMessage('ping');
+    }, 1000);
+  }
+
+  private stopPing() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
+    }
   }
 }
 

@@ -11,8 +11,14 @@ export function setupWebSocket(wss: WebSocketServer) {
     ws.isAlive = true;
 
     ws.on('message', async (message: string) => {
+      if (message === 'pong') {
+        return;
+      }
       try {
         const data = JSON.parse(message);
+        
+
+        // 处理心跳消息
         
         switch (data.type) {
           case 'start_task':
