@@ -33,57 +33,47 @@ const defaultNavigationInfos: NavigationInfo[] = [
     type: 0,
     imagesCandidate: [
       {
-        path: '/images/1/point1.jpg',
-        description: '前方走廊'
+        path: '/pics/candidate/100/0/0.png',
+        description: '0'
       },
       {
-        path: '/images/1/point2.jpg',
-        description: '右侧房间'
+        path: '/pics/candidate/100/0/1.png',
+        description: '1'
       },
       {
-        path: '/images/1/point3.jpg',
-        description: '左转通道'
-      }
+        path: '/pics/candidate/100/0/2.png',
+        description: '2'
+      },
+      {
+        path: '/pics/candidate/100/0/3.png',
+        description: '3'
+      },
+      {
+        path: '/pics/candidate/100/0/4.png',
+        description: '4'
+      },
+      {
+        path: '/pics/candidate/100/0/5.png',
+        description: '5'
+      },
+
     ],
     imagesSurrounding: [
-      '/images/1/surrounding1.jpg',
-      '/images/1/surrounding2.jpg',
-      '/images/1/surrounding3.jpg',
-      '/images/1/surrounding4.jpg'
+      '/pics/surrounding/100/0/0.jpg',
+      '/pics/surrounding/100/0/1.jpg',
+      '/pics/surrounding/100/0/2.jpg',
+      '/pics/surrounding/100/0/3.jpg'
     ],
-    currentImage: '/images/1/current.jpg',
+    currentImage: '/pics/current/100/0/current.jpg',
     currentDescription: '当前位置在房间的中心，面向北方',
-    text: '我选择继续向前走，因为前方走廊更宽敞'
+    text: '我选择继续向前走，因为前方走廊更宽敞',
+    video: '/videos/100/0/showHistory.mp4'
   },
-  {
-    id: '2',
-    timestamp: 2,
-    type: 1,
-    imagesCandidate: [
-      {
-        path: '/images/2/point1.jpg',
-        description: '左转'
-      },
-      {
-        path: '/images/2/point2.jpg',
-        description: '右转'
-      }
-    ],
-    imagesSurrounding: [
-      '/images/2/surrounding1.jpg',
-      '/images/2/surrounding2.jpg',
-      '/images/2/surrounding3.jpg',
-      '/images/2/surrounding4.jpg'
-    ],
-    currentImage: '/images/2/current.jpg',
-    currentDescription: '当前位置在走廊中间，两侧都有岔路',
-    video: '/videos/path_1_to_2.mp4',
-    text: '这里有两个选择，我需要帮助决定接下来往哪个方向走？'
-  }
+ 
 ];
 
 const initialState: NavigationState = {
-  navigationInfos: [],
+  navigationInfos: defaultNavigationInfos,
   currentTimestamp: 0,
 };
 
@@ -99,7 +89,6 @@ const navigationSlice = createSlice({
         timestamp,
       };
 
-    
       state.navigationInfos.push(navigationInfo);
       state.currentTimestamp = navigationInfo.timestamp;
       
