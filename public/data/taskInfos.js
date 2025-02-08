@@ -1,16 +1,16 @@
 window.taskInfos = [
   {
-    id: '1',
+    id: '0',
     descriptionZh: '我想在卧室走廊的墙上找一幅画，正对着厕所门，这个走廊连接着一间卧室、一个厕所和一个小客厅。那幅画是长方形的，黑白色的。',
     descriptionEn: "I'd like to find a picture on the wall, opposite to the door of the toilet in the corridor of the bedroom, which is connected with a bedroom, a toilet and a small living room. The picture is rectangular, black and white."
   },
   {
-    id: '2',
+    id: '1',
     descriptionZh: '找一个高大的、木质的、灰色的柜子，它位于一个大窗户旁边，一把椅子之间。这个书架放置在一个宽敞明亮的客厅里，客厅前面是餐厅和厨房。它位于一楼。',
     descriptionEn: "Find a tall, woody, gray cabinet which is next to a big window, between a chair. The bookshelf is settled in a spacious and bright living room in front of a dining room and a kitchen. It is located in the first floor."
   },
   {
-    id: '3',
+    id: '2',
     descriptionZh: '找一个长方形的、棕色的、木制相框，它在一朵花的后面，一个模型房子的下面，一个装有许多小球的托盘上面，位于客厅里。客厅在一个小绘图室的右侧，紧邻花园。',
     descriptionEn: "Find me a rectangular, brown, wooden photo frame behind a flower, under a model house and above a tray with lots of balls in the living room. And the living room is on the right side of a small drawing room and next to a garden."
   },
