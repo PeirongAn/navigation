@@ -33,11 +33,11 @@ const defaultNavigationInfos: NavigationInfo[] = [
     type: 0,
     imagesCandidate: [
       {
-        path: '/pics/candidate/100/0/0.png',
+        path: '/pics/candidate/100/0/0.png/f04ae8ebf8254168814bc669635b3775.png',
         description: '0'
       },
       {
-        path: '/pics/candidate/100/0/1.png',
+        path: '/pics/candidate/100/0/1.png/f04ae8ebf8254168814bc669635b3775.png',
         description: '1'
       },
       {
@@ -59,15 +59,15 @@ const defaultNavigationInfos: NavigationInfo[] = [
 
     ],
     imagesSurrounding: [
-      '/pics/surrounding/100/0/0.jpg',
+      '/pics/surrounding/100/0/0.jpg/3493ecf114864afc99d568421c0b42f6_skybox3_sami.jpg',
       '/pics/surrounding/100/0/1.jpg',
       '/pics/surrounding/100/0/2.jpg',
       '/pics/surrounding/100/0/3.jpg'
     ],
-    currentImage: '/pics/current/100/0/current.jpg',
+    currentImage: '/pics/current/100/0/current.jpg/3493ecf114864afc99d568421c0b42f6_skybox3_sami.jpg',
     currentDescription: '当前位置在房间的中心，面向北方',
     text: '我选择继续向前走，因为前方走廊更宽敞',
-    video: '/videos/100/0/showHistory.mp4'
+    video: '/videos/100/0/show_history.mp4'
   },
  
 ];
