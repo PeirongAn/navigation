@@ -15,7 +15,7 @@ const ChatInput: React.FC = () => {
   
   // 判断是否可以发送消息
   const canSendMessage = navigationInfos.length > 0 && 
-    navigationInfos[navigationInfos.length - 1].type === 'question';
+    navigationInfos[navigationInfos.length - 1].type === 1;
 
   const handleSend = () => {
     if (!message.trim() || !canSendMessage) return;

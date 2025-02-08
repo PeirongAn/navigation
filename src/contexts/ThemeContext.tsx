@@ -11,7 +11,7 @@ const noop = (checked: boolean) => {
 };
 
 const ThemeContext = createContext<ThemeContextType>({
-  isDarkMode: true,
+  isDarkMode: false,
   toggleTheme: noop,  // 使用 noop 函数替代空函数
 });
 

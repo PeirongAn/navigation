@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, Modal, Image } from 'antd';
+import { Modal, Image } from 'antd';
 import { PlayCircleOutlined, LeftOutlined, RightOutlined, RobotOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { setCurrentTimestamp } from '../../store/slices/navigationSlice';
@@ -7,20 +7,21 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 interface NavigationInfoProps {
   timestamp: number;
-  type: 'decision' | 'question';
-  images: string[];
-  video?: string;
-  decision?: string;
-  question?: string;
+  type: 0 | 1;
+  imagesCandidate: {
+    path: string;
+    description: string;
+  }[];
+  video?: string; 
+  text?: string;
 }
 
 const NavigationInfo: React.FC<NavigationInfoProps> = ({
   timestamp,
   type,
-  images,
+  imagesCandidate,
   video,
-  decision,
-  question
+  text,
 }) => {
   const dispatch = useDispatch();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -34,9 +35,9 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
   const IMAGES_PER_PAGE = 4;
   // 是否可以向前/向后滚动
   const canScrollPrev = startIndex > 0;
-  const canScrollNext = startIndex + IMAGES_PER_PAGE < images.length;
+  const canScrollNext = startIndex + IMAGES_PER_PAGE < imagesCandidate.length;
   // 当前显示的图片
-  const visibleImages = images.slice(startIndex, startIndex + IMAGES_PER_PAGE);
+  const visibleImages = imagesCandidate.slice(startIndex, startIndex + IMAGES_PER_PAGE);
 
   // 翻页处理
   const handlePrevImage = () => {
@@ -139,13 +140,16 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                   
                   {/* 图片列表 */}
                   <div className="grid grid-cols-4 gap-4">
-                    {visibleImages.map((image, i) => (
+                    {visibleImages.map(({path, description}, i) => (
                       <div key={startIndex + i} className={`border rounded ${
                         isDarkMode ? 'border-[#303030]' : 'border-gray-200'
                       }`}>
-                        <div className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`}>
+                        <div 
+                          className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'} cursor-pointer`}
+                          onClick={() => setSelectedImage(path)}
+                        >
                           <img 
-                            src={image}
+                            src={path}
                             alt={`可选点 ${startIndex + i + 1}`}
                             className="w-full h-full object-cover"
                           />
@@ -155,7 +159,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                             'border-[#303030] text-[#8c8c8c]' : 
                             'border-gray-200 text-gray-500'
                         }`}>
-                          {startIndex + i + 1}
+                          {description}
                         </div>
                       </div>
                     ))}
@@ -199,7 +203,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                 <div className={`mb-2 ${
                   isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
                 }`}>
-                  视频
+                  路径回放视频（从T=1到当前时刻轨迹视频）
                 </div>
                 <div className="w-1/2">
                   {video ? (
@@ -238,11 +242,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                           </div>
                         </div>
                       </div>
-                      <div className={`text-[#177ddc] mt-2 hover:underline text-center ${
-                        isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
-                      }`}>
-                        路径回放视频（从T=1到当前时刻轨迹视频）
-                      </div>
+                     
                     </>
                   ) : (
                     // 无视频时显示占位区域
@@ -258,13 +258,13 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
               </div>
 
               {/* 决策/问题内容 */}
-              {type === 'decision' ? (
+              {type === 0 ? (
                 <div className={`border rounded p-2 ${
                   isDarkMode ? 
                     'border-[#303030] text-white' : 
                     'border-gray-200 text-gray-800'
                 }`}>
-                  自主决策：{decision}
+                  自主决策：{text}
                 </div>
               ) : (
                 <div className={`border rounded p-2 ${
@@ -273,7 +273,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                     'border-gray-200 text-gray-800'
                 }`}>
                   <div className="text-[#ff4d4f]">
-                    寻求帮助：{question}
+                    寻求帮助：{text}
                   </div>
                 </div>
               )}
@@ -316,15 +316,15 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
         width={800}
         centered
         className={isDarkMode ? 'ant-modal-dark' : ''}
-        title={`可选点${images.indexOf(selectedImage!) + 1}预览`}
+        title={`可选点${selectedImage ? imagesCandidate.findIndex(item => item.path === selectedImage) + 1 : ''}预览`}
       >
         {selectedImage && (
           <div className={`flex items-center justify-center ${
             isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
           }`}>
             <Image
-              src={`/path/to/images/${selectedImage}`}
-              alt={`可选点${images.indexOf(selectedImage) + 1}`}
+              src={selectedImage}
+              alt={`可选点${imagesCandidate.findIndex(item => item.path === selectedImage) + 1}`}
               className="max-h-[600px] object-contain"
               preview={false}
             />

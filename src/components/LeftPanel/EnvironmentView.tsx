@@ -21,11 +21,11 @@ const EnvironmentView: React.FC = () => {
   }, [navigationInfos, currentTimestamp]);
 
   // 当前显示的图片
-  const visibleImages = currentInfo?.images.slice(startIndex, startIndex + IMAGES_PER_PAGE) || [];
+  const visibleImages = currentInfo?.imagesSurrounding.slice(startIndex, startIndex + IMAGES_PER_PAGE) || [];
   
   // 是否可以向前/向后滚动
   const canScrollPrev = startIndex > 0;
-  const canScrollNext = currentInfo?.images && startIndex + IMAGES_PER_PAGE < currentInfo.images.length;
+  const canScrollNext = currentInfo?.imagesSurrounding && startIndex + IMAGES_PER_PAGE < currentInfo.imagesSurrounding.length;
 
   // 翻页处理
   const handlePrevImage = () => {
@@ -44,15 +44,15 @@ const EnvironmentView: React.FC = () => {
     <Card className={`flex-1 flex flex-col ${
       isDarkMode ? 'bg-[#1f1f1f] border-[#303030]' : 'bg-white border-gray-200'
     }`}>
-      <div className={`text-lg mb-4 ${
+      <div className={`text-lg mb-2 ${
         isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
       }`}>
         T = {currentInfo?.timestamp || '当前时刻'}
       </div>
       
       {/* 智能体当前视角 */}
-      <div className="flex-1 mb-4">
-        <div className={`h-[400px] rounded ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`}>
+      <div className="flex-1 mb-2">
+        <div className={`h-[33vh] rounded ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`}>
           {currentInfo?.currentImage ? (
             <img 
               src={currentInfo.currentImage} 
@@ -60,7 +60,7 @@ const EnvironmentView: React.FC = () => {
               className="w-full h-full object-contain"
             />
           ) : (
-            <div className={`h-[400px] flex items-center justify-center ${
+            <div className={`h-[33vh] flex items-center justify-center ${
               isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-400'
             }`}>
               暂无视角图片

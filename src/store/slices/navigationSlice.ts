@@ -1,15 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+interface ImageInfo {
+  path: string;
+  description: string;
+}
 interface NavigationInfo {
-  id: string;
-  timestamp: number;
-  type: 'decision' | 'question';
-  images: string[];
-  currentImage?: string;
-  currentDescription?: string;
-  video?: string;
-  decision?: string;
-  question?: string;
+  id: string; // '1'
+  timestamp: number; // index + 1
+  type: 0 | 1; // 0: decision, 1: question
+  imagesCandidate: ImageInfo[]; // 候选点图片
+  imagesSurrounding: string[]; // 周围点图片
+  currentImage?: string; // 当前点图片
+  currentDescription?: string; // 当前位置描述
+  video?: string; // 路径回放视频
+  text?: string; // agent回复text
 }
 
 interface NavigationState {
@@ -22,31 +26,63 @@ const defaultNavigationInfos: NavigationInfo[] = [
   {
     id: '1',
     timestamp: 1,
-    type: 'decision',
-    images: [
-      '/images/point1.jpg',
-      '/images/point2.jpg',
-      '/images/point3.jpg',
-      '/images/point4.jpg'
+    type: 0, // 0 表示 decision
+    imagesCandidate: [
+      {
+        path: '/images/1/point1.jpeg',
+        description: '前方通道'
+      },
+      {
+        path: '/images/1/point2.jpg',
+        description: '右侧房间'
+      },
+      {
+        path: '/images/1/point3.jpg',
+        description: '左侧通道'
+      },
+      {
+        path: '/images/1/point4.jpg',
+        description: '后方出口'
+      }
     ],
-    decision: '向前移动',
-    currentImage: '/images/point1.jpg',
-    currentDescription: '当前位置在房间的中心，面向北方'
+    imagesSurrounding: [
+      '/images/1/surrounding1.jpg',
+      '/images/1/surrounding2.jpg',
+      '/images/1/surrounding3.jpg',
+      '/images/1/surrounding4.jpg'
+    ],
+    currentImage: '/images/1/current.jpeg',
+    currentDescription: '当前位置在房间的中心，面向北方',
+    text: '我决定向前移动，因为前方通道看起来更开阔'
   },
   {
     id: '2',
     timestamp: 2,
-    type: 'question',
-    images: [
-      '/images/point1.jpg',
-      '/images/point2.jpg',
-      '/images/point3.jpg',
-      '/images/point4.jpg'
+    type: 1, // 1 表示 question
+    imagesCandidate: [
+      {
+        path: '/images/2/point1.jpeg',
+        description: '左转通道'
+      },
+      {
+        path: '/images/2/point2.jpg',
+        description: '右转房间'
+      },
+      {
+        path: '/images/2/point3.jpg',
+        description: '直行通道'
+      }
     ],
-    video: '/test.mp4',
-    question: '下一步应该往哪个方向走？',
-    currentImage: '/images/point2.jpg',
-    currentDescription: '当前位置在房间的北侧，面向东方'
+    imagesSurrounding: [
+      '/images/2/surrounding1.jpg',
+      '/images/2/surrounding2.jpg',
+      '/images/2/surrounding3.jpg',
+      '/images/2/surrounding4.jpg'
+    ],
+    currentImage: '/images/2/current.jpeg',
+    currentDescription: '当前位置在房间的北侧，面向东方',
+    video: '/videos/path_1_to_2.mp4',
+    text: '这里有三个可能的方向，我需要帮助决定下一步该往哪个方向走？'
   }
 ];
 

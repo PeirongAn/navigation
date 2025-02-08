@@ -41,7 +41,7 @@ const AppContent: React.FC = () => {
       {/* 主体内容 */}
       <div className="flex-1 flex flex-row p-4 overflow-hidden content-container">
         {/* 左侧面板 */}
-        <div className="left-panel flex flex-col space-y-4" style={{ width: '35%' }}>
+        <div className="left-panel flex flex-col space-y-4 overflow-y-auto" style={{ width: '35%' }}>
           <TaskSelector />
           <EnvironmentView />
         </div>
