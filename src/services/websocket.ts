@@ -76,8 +76,9 @@ class WebSocketService {
     if (this.ws?.readyState === WebSocket.OPEN) {
         const message = { type, payload };
         this.ws.send(JSON.stringify(message));
-        this.addMessageLog('send', JSON.stringify(message));
-      
+        if (type !== 'ping') {
+          this.addMessageLog('send', JSON.stringify(message));
+        }      
     } else {
       console.error('WebSocket未连接');
     }

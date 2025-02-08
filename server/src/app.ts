@@ -10,7 +10,7 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ 
   server,
-  path: '/ws'  // WebSocket 路径
+  path: '/ws/client1'  // WebSocket 路径
 });
 
 // 中间件
