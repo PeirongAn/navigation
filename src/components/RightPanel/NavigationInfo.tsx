@@ -340,7 +340,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
             isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
           }`}>
             <Image
-              src={selectedImage}
+              src={`/resource${selectedImage}`}
               alt={`可选点${imagesCandidate.findIndex(item => item.path === selectedImage) + 1}`}
               className="max-h-[600px] object-contain"
               preview={false}

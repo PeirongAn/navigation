@@ -101,7 +101,7 @@ const AgentChat: React.FC = () => {
         <div className={`mt-4 text-lg ${
           isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
         }`}>
-          任务处理中...
+          模型加载中...
         </div>
       </div>
     );
