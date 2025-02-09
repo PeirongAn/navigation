@@ -19,8 +19,16 @@ const AgentChat: React.FC = () => {
   const taskStarted = useSelector((state: RootState) => state.navigation.taskStarted);
   const { isDarkMode } = useTheme();
   const [progress, setProgress] = useState(0);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const [showWaiting, setShowWaiting] = useState(false);
+
+  // 监听导航信息变化，更新首次加载状态
+  useEffect(() => {
+    if (navigationInfos.length > 0 && isFirstLoad) {
+      setIsFirstLoad(false);
+    }
+  }, [navigationInfos.length]);
 
   // 监听新消息到达
   useEffect(() => {
@@ -86,7 +94,7 @@ const AgentChat: React.FC = () => {
     scrollToBottom();
   }, [messages, navigationInfos]);
 
-  if (taskStarted && navigationInfos.length === 0) {
+  if (taskStarted && navigationInfos.length === 0 && isFirstLoad) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8">
         <Progress 
@@ -105,17 +113,18 @@ const AgentChat: React.FC = () => {
         </div>
       </div>
     );
-  } else  if (navigationInfos.length === 0) {
+  } else if (navigationInfos.length === 0) {
     return (
       <div className="h-full flex items-center justify-center">
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description={
             <span className={isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}>
-              请在左上方选择任务开始导航
+              {isFirstLoad ? '请在左上方选择任务开始导航' : '等待回复'}
             </span>
           }
         />
+
       </div>
     );
   }
