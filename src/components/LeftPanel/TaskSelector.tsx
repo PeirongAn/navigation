@@ -70,16 +70,6 @@ const TaskSelector: React.FC = () => {
     }
   };
 
-  const handleStopTask = () => {
-    if (taskId) {
-      // 停止任务，发送-1
-      wsService.sendMessage('start_task', '-1');
-      dispatch(stopTask());
-      setDisabled(false);
-      setStatus('已结束');
-    }
-
-  };
 
   const getStatusColor = () => {
     switch (status) {
@@ -165,14 +155,7 @@ const TaskSelector: React.FC = () => {
         </Button>
 
         
-        <Button 
-          danger
-          className="w-full"
-          onClick={handleStopTask}
-          disabled={status !== '进行中'}
-        >
-          停止任务
-        </Button>
+      
         
       </div>
     </Card>
