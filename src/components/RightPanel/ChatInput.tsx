@@ -19,9 +19,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   
   // 获取导航信息列表
   const navigationInfos = useSelector((state: RootState) => state.navigation.navigationInfos);
+  // 获取任务状态
+  const taskStarted = useSelector((state: RootState) => state.navigation.taskStarted);
   
+
   // 判断是否可以发送消息
-  const canSendMessage = navigationInfos.length > 0 && 
+  const canSendMessage = taskStarted && navigationInfos.length > 0  &&
 
     navigationInfos[navigationInfos.length - 1].type === 1;
 
@@ -51,7 +54,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
       <Input.TextArea 
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder={canSendMessage ? "请输入消息..." : "等待Agent提问..."}
+        placeholder={canSendMessage ? "请输入消息..." : `${taskStarted ? '等待Agent提问...' : '当前任务已结束，请选择其他任务'}`}
         autoSize={{ minRows: 1, maxRows: 4 }}
         onKeyPress={handleKeyPress}
         disabled={!canSendMessage}

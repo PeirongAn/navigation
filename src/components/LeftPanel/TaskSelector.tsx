@@ -4,14 +4,11 @@ import { useDispatch } from 'react-redux';
 import { useTheme } from '../../contexts/ThemeContext';
 import { clearNavigationInfos, startTask, stopTask } from '../../store/slices/navigationSlice';
 import { wsService } from '../../services/websocket';
+import { clearMessages } from '../../store/slices/chatSlice';
 
 const { Option } = Select;
 
 type TaskStatus = '未选择' | '未开始' | '进行中' | '已结束';
-
-interface TaskDescription {
-  description: string;
-}
 
 const TaskSelector: React.FC = () => {
   const [taskId, setTaskId] = useState<string>();
@@ -32,6 +29,7 @@ const TaskSelector: React.FC = () => {
     wsService.addMessageHandler('finish', () => {
       setDisabled(false);
       setStatus('已结束');
+      dispatch(stopTask());
       Modal.success({
         title: '任务完成',
         content: '当前任务已执行完毕，您可以重新开始或选择其他任务。',
@@ -49,6 +47,7 @@ const TaskSelector: React.FC = () => {
     setDescription(taskOptions.find(option => option.value === value)?.description || '');
     setStatus('未开始');
     dispatch(clearNavigationInfos());
+    dispatch(clearMessages());
   };
 
   const handleStartTask = () => {
