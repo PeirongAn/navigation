@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Select, Button, Input, Tag, Modal } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useTheme } from '../../contexts/ThemeContext';
-import { clearNavigationInfos, startTask } from '../../store/slices/navigationSlice';
+import { clearNavigationInfos, startTask, stopTask } from '../../store/slices/navigationSlice';
 import { wsService } from '../../services/websocket';
 
 const { Option } = Select;
@@ -69,6 +69,17 @@ const TaskSelector: React.FC = () => {
       setDisabled(true);
       setStatus('进行中');
     }
+  };
+
+  const handleStopTask = () => {
+    if (taskId) {
+      // 停止任务，发送-1
+      wsService.sendMessage('start_task', '-1');
+      dispatch(stopTask());
+      setDisabled(false);
+      setStatus('已结束');
+    }
+
   };
 
   const getStatusColor = () => {
@@ -153,6 +164,17 @@ const TaskSelector: React.FC = () => {
         >
           {status === '已结束' ? '重新开始' : '开始执行'}
         </Button>
+
+        
+        <Button 
+          danger
+          className="w-full"
+          onClick={handleStopTask}
+          disabled={status !== '进行中'}
+        >
+          停止任务
+        </Button>
+        
       </div>
     </Card>
   );

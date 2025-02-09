@@ -110,6 +110,9 @@ const navigationSlice = createSlice({
       state.taskStarted = true;
       state.navigationInfos = [];
     },
+    stopTask: (state) => {
+      state.taskStarted = false;
+    },
   },
 });
 
@@ -119,6 +122,7 @@ export const {
   clearNavigationInfos,
   resetToDefault,
   startTask,
+  stopTask,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer; 
