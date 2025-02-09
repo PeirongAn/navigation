@@ -30,5 +30,4 @@ export interface ChatMessage {
 
 export interface ChatState {
   messages: ChatMessage[];
-  currentTimestamp: number;
 } 

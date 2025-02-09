@@ -22,6 +22,7 @@ interface NavigationInfo extends NavigationInfoOrigin {
 interface NavigationState {
   navigationInfos: NavigationInfo[];
   currentTimestamp: number | null;
+  taskStarted: boolean;
 }
 
 
@@ -73,8 +74,9 @@ const defaultNavigationInfos: NavigationInfo[] = [
 ];
 
 const initialState: NavigationState = {
-  navigationInfos: defaultNavigationInfos,
-  currentTimestamp: 0,
+  navigationInfos: [],
+  currentTimestamp: null,
+  taskStarted: false,
 };
 
 const navigationSlice = createSlice({
@@ -104,6 +106,10 @@ const navigationSlice = createSlice({
       state.navigationInfos = defaultNavigationInfos;
       state.currentTimestamp = defaultNavigationInfos[defaultNavigationInfos.length - 1].timestamp;
     },
+    startTask: (state, action: PayloadAction<string>) => {
+      state.taskStarted = true;
+      state.navigationInfos = [];
+    },
   },
 });
 
@@ -111,7 +117,8 @@ export const {
   addNavigationInfo, 
   setCurrentTimestamp,
   clearNavigationInfos,
-  resetToDefault
+  resetToDefault,
+  startTask,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer; 

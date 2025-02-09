@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Select, Button, Input, Tag, Modal } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useTheme } from '../../contexts/ThemeContext';
-import { clearNavigationInfos } from '../../store/slices/navigationSlice';
+import { clearNavigationInfos, startTask } from '../../store/slices/navigationSlice';
 import { wsService } from '../../services/websocket';
 
 const { Option } = Select;
@@ -65,15 +65,10 @@ const TaskSelector: React.FC = () => {
       
       dispatch(clearNavigationInfos());
       wsService.sendMessage('start_task', taskId );
+      dispatch(startTask(taskId));
       setDisabled(true);
       setStatus('进行中');
     }
-  };
-
-  const handleRestart = () => {
-    dispatch(clearNavigationInfos());
-    setStatus('未开始');
-    setDisabled(false);
   };
 
   const getStatusColor = () => {

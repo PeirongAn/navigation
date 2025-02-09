@@ -234,11 +234,28 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                             'bg-black/10 hover:bg-black/30'
                         } transition-colors`}>
                           <div className="w-full h-full flex items-center justify-center">
-                            <PlayCircleOutlined className={`text-[64px] ${
-                              isDarkMode ? 
-                                'text-white/90 hover:text-white' : 
-                                'text-white/80 hover:text-white/90'
-                            } transition-colors`} />
+                            <PlayCircleOutlined 
+                              className={`text-[64px] ${
+                                isDarkMode ? 
+                                  'text-white/90 hover:text-white' : 
+                                  'text-white/80 hover:text-white/90'
+                              }`}
+                              style={{ 
+                                cursor: 'pointer',
+                                color: isDarkMode ? 
+                                  'rgba(255, 255, 255, 0.9)' : 
+                                  'rgba(255, 255, 255, 0.8)',
+                                transition: 'color 0.3s'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = isDarkMode ? 
+                                  'rgba(255, 255, 255, 0.9)' : 
+                                  'rgba(255, 255, 255, 0.8)';
+                              }}
+                            />
                           </div>
                         </div>
                       </div>

@@ -6,16 +6,23 @@ import { RootState } from '../../store';
 import { useTheme } from '../../contexts/ThemeContext';
 import { wsService } from '../../services/websocket';
 
-const ChatInput: React.FC = () => {
+interface ChatInputProps {
+  onSend?: () => void;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   const { isDarkMode } = useTheme();
+  // 获取当前时间戳
+  const currentTimestamp = useSelector((state: RootState) => state.navigation.currentTimestamp);
   
   // 获取导航信息列表
   const navigationInfos = useSelector((state: RootState) => state.navigation.navigationInfos);
   
   // 判断是否可以发送消息
   const canSendMessage = navigationInfos.length > 0 && 
+
     navigationInfos[navigationInfos.length - 1].type === 1;
 
   const handleSend = () => {
@@ -25,8 +32,11 @@ const ChatInput: React.FC = () => {
     wsService.sendMessage('user_input', message.trim());
     
     // 添加到本地聊天记录
-    dispatch(addMessage(message.trim()));
+    dispatch(addMessage({message: message.trim(), timestamp: currentTimestamp || 0}));
     setMessage('');
+    
+    // 触发发送回调
+    onSend?.();
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
