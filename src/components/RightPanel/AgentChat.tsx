@@ -5,6 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import NavigationInfo from './NavigationInfo';
 import ChatInput from './ChatInput';
 import { Empty, Progress } from 'antd';
+import { RobotOutlined } from '@ant-design/icons';
 
 interface CombinedMessage {
   type: 'navigation' | 'chat' | 'waiting';
@@ -131,21 +132,21 @@ const AgentChat: React.FC = () => {
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                   isDarkMode ? 'bg-[#49aa19]' : 'bg-[#52c41a]'
                 }`}>
-                  <span className="text-white">A</span>
+                   <RobotOutlined className="text-white" />
                 </div>
                 <div className="flex flex-col flex-1">
                   <div className={`mb-1 ${
                     isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
                   }`}>
-                    Agent
+                    <span>Agent</span>
                   </div>
                   <div className={`rounded-lg p-3 ${
                     isDarkMode ? 'bg-[#262626]' : 'bg-gray-100'
                   }`}>
                     <div className="flex gap-1">
-                      <span className="animate-bounce">.</span>
-                      <span className="animate-bounce delay-100">.</span>
-                      <span className="animate-bounce delay-200">.</span>
+                      <span className={`animate-[blink_1s_ease-in-out_infinite] ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>.</span>
+                      <span className={`animate-[blink_1s_ease-in-out_0.3s_infinite] ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>.</span>
+                      <span className={`animate-[blink_1s_ease-in-out_0.6s_infinite] ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>.</span>
                     </div>
                   </div>
                 </div>
