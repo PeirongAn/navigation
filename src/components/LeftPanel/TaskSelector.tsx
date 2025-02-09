@@ -25,7 +25,7 @@ const TaskSelector: React.FC = () => {
   const taskOptions = (window.taskInfos || []).map(info => ({
     value: info.id,
     label: `任务 ${info.id}`,
-    description: info.descriptionZh
+    description: info.descriptionEn
   }));
 
   useEffect(() => {

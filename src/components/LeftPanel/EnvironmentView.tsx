@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card } from 'antd';
+import { Card, Modal, Image } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -39,6 +39,9 @@ const EnvironmentView: React.FC = () => {
       setStartIndex(prev => prev + 1);
     }
   };
+
+  // 添加选中的图片状态
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
     <Card className={`flex-1 flex flex-col ${
@@ -96,7 +99,10 @@ const EnvironmentView: React.FC = () => {
               <div key={startIndex + i} className={`border rounded ${
                 isDarkMode ? 'border-[#303030]' : 'border-gray-200'
               }`}>
-                <div className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`}>
+                <div 
+                  className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'} cursor-pointer`}
+                  onClick={() => setSelectedImage(image)}
+                >
                   <img 
                     src={`/resource${image}`} 
                     alt={`周边环境 ${startIndex + i + 1}`}
@@ -146,6 +152,30 @@ const EnvironmentView: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* 图片预览 Modal */}
+      <Modal
+        open={!!selectedImage}
+        onCancel={() => setSelectedImage(null)}
+        footer={null}
+        width={800}
+        centered
+        className={isDarkMode ? 'ant-modal-dark' : ''}
+        title={`周边环境图片 ${selectedImage ? visibleImages.findIndex(img => img === selectedImage) + 1 : ''}`}
+      >
+        {selectedImage && (
+          <div className={`flex items-center justify-center ${
+            isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
+          }`}>
+            <Image
+              src={`/resource${selectedImage}`}
+              alt="周边环境预览"
+              className="max-h-[600px] object-contain"
+              preview={false}
+            />
+          </div>
+        )}
+      </Modal>
 
       {/* 环境描述 */}
       <div className={`border rounded p-4 ${
