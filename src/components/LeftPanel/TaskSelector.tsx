@@ -156,7 +156,10 @@ const TaskSelector: React.FC = () => {
             size="small"
             type="link"
             icon={<DeleteOutlined />}
-            onClick={() => {dispatch(clearNavigationInfos()); dispatch(resetTask());}}
+            onClick={() => {
+              dispatch(clearNavigationInfos()); 
+              dispatch(resetTask()); 
+              dispatch(clearMessages());}}
             className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'}
           >
             清空任务

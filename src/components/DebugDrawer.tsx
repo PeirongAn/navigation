@@ -7,6 +7,7 @@ import { DeleteOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons'
 import { useLanguage } from '../contexts/LanguageContext';
 import { messages } from '../locales';
 import { useDispatch } from 'react-redux';
+import { clearMessages } from 'store/slices/chatSlice';
 
 interface TaskInfo {
   id: string;
@@ -197,7 +198,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
           <Button 
             type="link"
             icon={<DeleteOutlined />}
-            onClick={() => {dispatch(clearNavigationInfos()); dispatch(resetTask());}}
+            onClick={() => {dispatch(clearNavigationInfos()); dispatch(resetTask()); dispatch(clearMessages());}}
             className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'}
           >
             {t.clearNavigation}
