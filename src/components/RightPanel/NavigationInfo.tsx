@@ -31,6 +31,8 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
   const [isImagesExpanded, setIsImagesExpanded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isDarkMode } = useTheme();
+  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const previewVideoRef = useRef<HTMLVideoElement>(null);
 
   // 每页显示的图片数量
   const IMAGES_PER_PAGE = 4;
@@ -55,27 +57,36 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
 
   useEffect(() => {
     if (video) {
-      // 创建一个临时视频元素来生成缩略图
-      const tempVideo = document.createElement('video');
-      tempVideo.src = `/resource${video}`;
-      tempVideo.crossOrigin = 'anonymous'; // 如果视频来自其他域名
+      // 创建预览视频元素
+      const previewVideo = document.createElement('video');
+      previewVideo.src = `/resource${video}`;
+      previewVideo.crossOrigin = 'anonymous';
+      previewVideo.muted = true; // 静音播放
 
-      tempVideo.addEventListener('loadeddata', () => {
-        // 视频加载完成后，在 1 秒处生成缩略图
-        tempVideo.currentTime = 1;
-      });
-
-      tempVideo.addEventListener('seeked', () => {
-        // 创建 canvas 并绘制视频帧
-        const canvas = document.createElement('canvas');
-        canvas.width = tempVideo.videoWidth;
-        canvas.height = tempVideo.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+      // 先生成缩略图
+      previewVideo.addEventListener('loadeddata', () => {
+        // 设置到视频开始位置
+        previewVideo.currentTime = 0;
         
-        // 将 canvas 转换为图片 URL
-        const dataUrl = canvas.toDataURL('image/jpeg');
-        setThumbnailUrl(dataUrl);
+        const canvas = document.createElement('canvas');
+        canvas.width = previewVideo.videoWidth;
+        canvas.height = previewVideo.videoHeight;
+        const ctx = canvas.getContext('2d');
+        
+        // 生成缩略图
+        ctx?.drawImage(previewVideo, 0, 0, canvas.width, canvas.height);
+        setThumbnailUrl(canvas.toDataURL('image/jpeg'));
+
+        // 延迟一会儿再开始播放预览
+        setTimeout(() => {
+          setIsPreviewPlaying(true);
+          previewVideo.play().then(() => {
+            // 播放结束时
+            previewVideo.addEventListener('ended', () => {
+              setIsPreviewPlaying(false);
+            });
+          });
+        }, 1000); // 延迟1秒开始播放
       });
     }
   }, [video]);
@@ -219,60 +230,64 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
                 </div>
                 <div className="w-1/2">
                   {video ? (
-                    <>
-                      {/* 有视频时显示缩略图和播放按钮 */}
-                      <div 
-                        className={`relative h-32 rounded overflow-hidden cursor-pointer ${
-                          isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
-                        }`}
-                        onClick={() => setIsVideoModalOpen(true)}
-                      >
-                        {thumbnailUrl ? (
-                          <img 
-                            src={thumbnailUrl}
-                            alt="视频缩略图"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className={`w-full h-full flex items-center justify-center ${
-                            isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-400'
-                          }`}>
-                            加载中...
-                          </div>
-                        )}
-                        <div className={`absolute inset-0 flex items-center justify-center ${
-                          isDarkMode ? 
-                            'bg-black/20 hover:bg-black/40' : 
-                            'bg-black/10 hover:bg-black/30'
-                        } transition-colors`}>
-                          <div className="w-full h-full flex items-center justify-center">
-                            <PlayCircleOutlined 
-                              className={`text-[64px] ${
-                                isDarkMode ? 
-                                  'text-white/90 hover:text-white' : 
-                                  'text-white/80 hover:text-white/90'
-                              }`}
-                              style={{ 
-                                cursor: 'pointer',
-                                color: isDarkMode ? 
-                                  'rgba(255, 255, 255, 0.9)' : 
-                                  'rgba(255, 255, 255, 0.8)',
-                                transition: 'color 0.3s'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.color = isDarkMode ? 
-                                  'rgba(255, 255, 255, 0.9)' : 
-                                  'rgba(255, 255, 255, 0.8)';
-                              }}
-                            />
-                          </div>
+                    <div 
+                      className={`relative h-32 rounded overflow-hidden cursor-pointer ${
+                        isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
+                      }`}
+                      onClick={() => setIsVideoModalOpen(true)}
+                    >
+                      {isPreviewPlaying ? (
+                        <video
+                          ref={previewVideoRef}
+                          src={`/resource${video}`}
+                          className="w-full h-full object-cover"
+                          muted
+                          autoPlay
+                        />
+                      ) : thumbnailUrl ? (
+                        <img 
+                          src={thumbnailUrl}
+                          alt="视频缩略图"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center ${
+                          isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-400'
+                        }`}>
+                          加载中...
                         </div>
-                      </div>
-                     
-                    </>
+                      )}
+                      {!isPreviewPlaying && <div className={`absolute inset-0 flex items-center justify-center ${
+                        isDarkMode ? 
+                          'bg-black/20 hover:bg-black/40' : 
+                          'bg-black/10 hover:bg-black/30'
+                      } transition-colors`}>
+                        <div className="w-full h-full flex items-center justify-center">
+                          <PlayCircleOutlined 
+                            className={`text-[64px] ${
+                              isDarkMode ? 
+                                'text-white/90 hover:text-white' : 
+                                'text-white/80 hover:text-white/90'
+                            }`}
+                            style={{ 
+                              cursor: 'pointer',
+                              color: isDarkMode ? 
+                                'rgba(255, 255, 255, 0.9)' : 
+                                'rgba(255, 255, 255, 0.8)',
+                              transition: 'color 0.3s'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = 'rgba(255, 255, 255, 1)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = isDarkMode ? 
+                                'rgba(255, 255, 255, 0.9)' : 
+                                'rgba(255, 255, 255, 0.8)';
+                            }}
+                          />
+                        </div>
+                      </div>}
+                    </div>
                   ) : (
                     // 无视频时显示占位区域
                     <div className={`h-32 rounded flex items-center justify-center ${
