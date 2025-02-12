@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, Select, Button, Input, Tag, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '../../contexts/ThemeContext';
-import { clearNavigationInfos, startTask, stopTask, setTaskId } from '../../store/slices/navigationSlice';
+import { clearNavigationInfos, startTask, stopTask, setTaskId, resetTask } from '../../store/slices/navigationSlice';
 import { wsService } from '../../services/websocket';
 import { clearMessages } from '../../store/slices/chatSlice';
 import { RootState } from '../../store';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
@@ -146,13 +147,23 @@ const TaskSelector: React.FC = () => {
           }`}>
             任务状态
           </div>
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex flex-1 justify-between">
             <Tag color={getStatusColor()}>
               {taskStatus}
             </Tag>
+            <Button
+            danger
+            size="small"
+            type="link"
+            icon={<DeleteOutlined />}
+            onClick={() => {dispatch(clearNavigationInfos()); dispatch(resetTask());}}
+            className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'}
+          >
+            清空任务
+          </Button>
           </div>
         </div>
-        <Button 
+        {taskId && !taskStarted && <Button 
           type="primary" 
           className={`w-full ${
             isDarkMode ? 
@@ -163,7 +174,7 @@ const TaskSelector: React.FC = () => {
           onClick={handleStartTask}
         >
           {taskStatus === '已结束' ? '重新开始' : '开始执行'}
-        </Button>
+        </Button>}
       </div>
     </Card>
   );
