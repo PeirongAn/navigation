@@ -40,10 +40,10 @@ const AgentChat: React.FC = () => {
   // 合并并排序消息
   const combinedMessages = React.useMemo(() => {
     const combined: CombinedMessage[] = [
-      ...navigationInfos.map((info: { timestamp: any; }) => ({
+      ...navigationInfos.map((info: { timestamp: number; }, index: number) => ({
         type: 'navigation' as const,
         timestamp: info.timestamp,
-        content: info
+        content: {...info, hasRatting: index === 0 ? false : (navigationInfos[index - 1].type === 1)},
       })),
       ...messages.map(msg => ({
         type: 'chat' as const,

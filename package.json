@@ -2,6 +2,7 @@
   "name": "ai-navigation",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@ant-design/icons": "^5.3.0",
     "@reduxjs/toolkit": "^2.1.0",

@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Image } from 'antd';
-import { PlayCircleOutlined, LeftOutlined, RightOutlined, RobotOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { Modal, Image, Button, Rate, Input } from 'antd';
+import { PlayCircleOutlined, LeftOutlined, RightOutlined, RobotOutlined, StarOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../../store';
 import { setCurrentTimestamp } from '../../store/slices/navigationSlice';
 import { useTheme } from '../../contexts/ThemeContext';
+import { submitRating } from '../../store/slices/ratingSlice';
+import { message } from 'antd';
 
 interface NavigationInfoProps {
   timestamp: number;
@@ -14,16 +17,18 @@ interface NavigationInfoProps {
   }[];
   video?: string; 
   text?: string;
+  hasRatting: boolean;
 }
 
 const NavigationInfo: React.FC<NavigationInfoProps> = ({
+  hasRatting,
   timestamp,
   type,
   imagesCandidate,
   video,
   text,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [startIndex, setStartIndex] = useState(0);
@@ -33,6 +38,17 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
   const { isDarkMode } = useTheme();
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const previewVideoRef = useRef<HTMLVideoElement>(null);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [comment, setComment] = useState('');
+  const { TextArea } = Input;
+  const [confidenceScore, setConfidenceScore] = useState(-1);
+  const [difficultyScore, setDifficultyScore] = useState(-1);
+  const [timingScore, setTimingScore] = useState(-1);
+  const [contentScore, setContentScore] = useState(-1);
+  const [interactionScore, setInteractionScore] = useState(-1);
+  const [locationScore, setLocationScore] = useState(-1);
+
+  const taskId = useSelector((state: RootState) => state.navigation.taskId);
 
   // 每页显示的图片数量
   const IMAGES_PER_PAGE = 4;
@@ -41,7 +57,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
   const canScrollNext = startIndex + IMAGES_PER_PAGE < imagesCandidate.length;
   // 当前显示的图片
   const visibleImages = imagesCandidate.slice(startIndex, startIndex + IMAGES_PER_PAGE);
-
+  const userId = localStorage.getItem('userId') || 'unknown';
   // 翻页处理
   const handlePrevImage = () => {
     if (canScrollPrev) {
@@ -54,7 +70,6 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
       setStartIndex(prev => prev + 1);
     }
   };
-
   useEffect(() => {
     if (video) {
       // 创建预览视频元素
@@ -95,8 +110,47 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
     dispatch(setCurrentTimestamp(timestamp));
   };
 
+  const handleRatingSubmit = async () => {
+    try {
+      dispatch(submitRating({
+        timestamp,
+        confidenceScore,
+        difficultyScore,
+        timingScore,
+        contentScore,
+        interactionScore,
+        locationScore,
+        comment,
+        taskId,
+        userId
+      }));
+      
+      message.success('评价提交成功！');
+      setIsRatingModalOpen(false);
+      // 重置表单为 -1
+      setConfidenceScore(-1);
+      setDifficultyScore(-1);
+      setTimingScore(-1);
+      setContentScore(-1);
+      setInteractionScore(-1);
+      setLocationScore(-1);
+      setComment('');
+    } catch (error) {
+      message.error('评价提交失败，请重试');
+    }
+  };
+
   return (
     <>
+      <div>   
+        {hasRatting && <Button 
+              type="link"
+              icon={<StarOutlined />}
+              onClick={() => {setIsRatingModalOpen(true); dispatch(setCurrentTimestamp(timestamp - 1))}}
+              className={isDarkMode ? 'bg-[#177ddc]' : ''}
+            >
+              {`评价 T=${timestamp - 1}`}
+        </Button>}
       <div className="flex items-start gap-3 mb-4">
         {/* Agent头像 */}
         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -104,23 +158,29 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
         }`}>
           <RobotOutlined className="text-white" />
         </div>
-
+        
         <div className="flex flex-col flex-1">
-          {/* 时间戳 */}
-          <div className={`mb-1 flex items-center gap-2 ${
+      
+          {/* 时间戳行 - 添加评价按钮 */}
+          <div className={`mb-1 flex items-center gap-2 justify-between ${
             isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
           }`}>
-            <span>Agent</span>
-            <span 
-              className={`cursor-pointer ${
-                isDarkMode ? 
-                  'text-[#177ddc] hover:text-[#1765ad]' : 
-                  'text-[#1890ff] hover:text-[#40a9ff]'
-              }`}
-              onClick={handleTimestampClick}
-            >
-              T={timestamp}
-            </span>
+            <div className="flex items-center gap-2">
+              <span>Agent</span>
+              <span 
+                className={`cursor-pointer ${
+                  isDarkMode ? 
+                    'text-[#177ddc] hover:text-[#1765ad]' : 
+                    'text-[#1890ff] hover:text-[#40a9ff]'
+                }`}
+                onClick={handleTimestampClick}
+              >
+                T={timestamp}
+              </span>
+            
+            </div>
+            
+         
           </div>
 
           {/* 内容区域 */}
@@ -325,6 +385,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
           </div>
         </div>
       </div>
+      </div>
 
       {/* 视频播放弹窗 */}
       <Modal
@@ -363,20 +424,93 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
         title={`可选点${selectedImage ? imagesCandidate.findIndex(item => item.path === selectedImage) + 1 : ''}预览`}
       >
         {selectedImage && (
-          <div className={`flex items-center justify-center ${
-            isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'
-          }`}>
-            <Image
-              src={`/resource${selectedImage}`}
-              alt={`可选点${imagesCandidate.findIndex(item => item.path === selectedImage) + 1}`}
-              className="max-h-[600px] object-contain"
-              preview={false}
+          <Image
+            src={`/resource${selectedImage}`}
+            alt="预览图片"
+            className="w-full h-full object-cover"
+          />
+        )}
+      </Modal>
+
+      {/* 评价弹窗 */}
+      <Modal
+        title="步骤评价"
+        open={isRatingModalOpen}
+        onCancel={() => setIsRatingModalOpen(false)}
+        onOk={handleRatingSubmit}
+        okText="提交"
+        cancelText="取消"
+        className={isDarkMode ? 'ant-modal-dark' : ''}
+      >
+        <div className="space-y-4">
+          <div>
+            <div className="mb-2">回复置信度：</div>
+            <Rate 
+              value={confidenceScore} 
+              onChange={setConfidenceScore}
+              count={3}
+              className={isDarkMode ? 'text-[#177ddc]' : ''}
             />
           </div>
-        )}
+          <div>
+            <div className="mb-2">回复困难度：</div>
+            <Rate 
+              value={difficultyScore} 
+              onChange={setDifficultyScore}
+              count={3}
+              className={isDarkMode ? 'text-[#177ddc]' : ''}
+            />
+          </div>
+          <div>
+            <div className="mb-2">提问时机：</div>
+            <Rate 
+              value={timingScore} 
+              onChange={setTimingScore}
+              count={3}
+              className={isDarkMode ? 'text-[#177ddc]' : ''}
+            />
+          </div>
+          <div>
+            <div className="mb-2">问题内容：</div>
+            <Rate 
+              value={contentScore} 
+              onChange={setContentScore}
+              count={3}
+              className={isDarkMode ? 'text-[#177ddc]' : ''}
+            />
+          </div>
+          <div>
+            <div className="mb-2">交互行为：</div>
+            <Rate 
+              value={interactionScore} 
+              onChange={setInteractionScore}
+              count={3}
+              className={isDarkMode ? 'text-[#177ddc]' : ''}
+            />
+          </div>
+          <div>
+            <div className="mb-2">位置描述：</div>
+            <Rate 
+              value={locationScore} 
+              onChange={setLocationScore}
+              count={3}
+              className={isDarkMode ? 'text-[#177ddc]' : ''}
+            />
+          </div>
+          <div>
+            <div className="mb-2">评价内容：</div>
+            <TextArea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="请输入您的评价..."
+              rows={4}
+              className={isDarkMode ? 'bg-[#1f1f1f] border-[#434343] text-white' : ''}
+            />
+          </div>
+        </div>
       </Modal>
     </>
   );
 };
 
-export default NavigationInfo; 
+export default NavigationInfo;

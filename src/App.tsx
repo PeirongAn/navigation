@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Layout, Switch, Button, ConfigProvider, Modal, Image, Steps } from 'antd';
-import { BulbOutlined, BulbFilled, BugOutlined, GlobalOutlined, QuestionCircleOutlined, ReadOutlined, EnvironmentOutlined, SolutionOutlined } from '@ant-design/icons';
+import { Layout, Switch, Button, ConfigProvider, Modal, Image, Steps, Avatar, Dropdown } from 'antd';
+import { BulbOutlined, BulbFilled, BugOutlined, GlobalOutlined, QuestionCircleOutlined, ReadOutlined, EnvironmentOutlined, SolutionOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import TaskSelector from './components/LeftPanel/TaskSelector';
@@ -10,6 +10,10 @@ import ResizeableDivider from './components/ResizeableDivider';
 import WebSocketClient from './components/WebSocketClient';
 import DebugDrawer from './components/DebugDrawer';
 import enUS from 'antd/locale/en_US';
+import Login from './components/Login';
+import { clearNavigationInfos, resetTask } from 'store/slices/navigationSlice';
+import { clearMessages } from 'store/slices/chatSlice';
+import { useDispatch } from 'react-redux';
 
 const { Header } = Layout;
 
@@ -18,6 +22,35 @@ const AppContent: React.FC = () => {
   const { language, toggleLanguage } = useLanguage();
   const [debugVisible, setDebugVisible] = useState(false);
   const [isExampleVisible, setIsExampleVisible] = useState(false);
+  const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
+  const dispatch = useDispatch();
+  const handleLogin = (newUserId: string) => {
+    setUserId(newUserId);
+    localStorage.setItem('userId', newUserId);
+  };
+
+  const handleLogout = () => {
+    dispatch(clearNavigationInfos());
+    dispatch(resetTask());
+    dispatch(clearMessages());
+    localStorage.removeItem('userId');
+    setUserId(null);
+  };
+
+  if (!userId) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  const userMenu = {
+    items: [
+      {
+        key: 'logout',
+        icon: <LogoutOutlined />,
+        label: language === 'en' ? 'Logout' : '退出登录',
+        onClick: handleLogout,
+      },
+    ],
+  };
 
   return (
     <Layout className={`h-screen flex flex-col ${isDarkMode ? 'bg-[#141414]' : 'bg-white'}`}>
@@ -26,11 +59,13 @@ const AppContent: React.FC = () => {
       <Header className={`${
         isDarkMode ? 'bg-[#1f1f1f] border-[#303030]' : 'bg-white border-gray-200'
       } border-b flex items-center justify-between py-2 px-6`}>
-        <h1 className={`text-2xl font-bold m-0 ${
-          isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
-        }`}>
-          {language === 'en' ? 'AI Navigation Assistant' : 'AI导航助手'}
-        </h1>
+        <div className="flex items-center">
+          <h1 className={`text-2xl font-bold m-0 ${
+            isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
+          }`}>
+            {language === 'en' ? 'AI Navigation Assistant' : 'AI导航助手'}
+          </h1>
+        </div>
         
         {/* 主题切换开关 */}
         <div className="flex items-center gap-4">
@@ -58,6 +93,17 @@ const AppContent: React.FC = () => {
             checked={isDarkMode}
             onChange={toggleTheme}
           />
+          <Dropdown menu={userMenu} placement="bottomRight">
+            <div className="flex items-center cursor-pointer hover:opacity-80">
+              <Avatar 
+                icon={<UserOutlined />} 
+                className={`${isDarkMode ? 'bg-[#177ddc]' : 'bg-[#1890ff]'}`}
+              />
+              <span className={`ml-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                {userId}
+              </span>
+            </div>
+          </Dropdown>
         </div>
       </Header>
 
@@ -167,43 +213,8 @@ const AppContent: React.FC = () => {
                 向前走，越过茶几之后右转到卧室（高层的语义信息）
               </div>
             </div>
-            <div className="flex items-start gap-2">
-              <span className="font-medium">b.</span>
-              <div>
-                <span className={`font-medium ${
-                  isDarkMode ? 'text-[#d32029]' : 'text-[#ff4d4f]'
-                }`}>不希望的回答：</span>
-                选择图一。（可选点信息主要是给人看作为辅助信息的，不是真的让人去选择）
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="font-medium">c.</span>
-              <div>如果真的要只是选择一步，那么一定要复制上面图片的方向描述。</div>
-            </div>
+            {/* ... 其他示例内容 ... */}
           </div>
-          
-          <div className={`mt-4 ${isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}`}>
-            具体请参考以下示例输入：
-          </div>
-          <div className={`w-1/2 mx-auto mt-2 border rounded-lg overflow-hidden ${
-            isDarkMode ? 'border-[#303030]' : 'border-gray-200'
-          }`}>
-            <Image
-              src="/input_example.png"
-              alt="Input Example"
-              className="w-full"
-              preview={false}
-            />
-          </div>
-          <h3 className={`text-lg font-medium mb-2 ${
-            isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
-          }`}>
-            3. 任务结束
-          </h3>
-          <div className={`text-sm ${isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}`}>
-            任务结束后，系统会给出“任务完成”提示，用户可以重新开始或选择其他任务。默认16步（T=16）后任务结束
-          </div>
-         
         </div>
       </Modal>
     </Layout>
@@ -222,4 +233,6 @@ const App: React.FC = () => {
   );
 };
 
-export default App; 
+export default App;
+
+

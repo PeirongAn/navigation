@@ -23,6 +23,7 @@
     ],
     "currentImage": "/images/1/current.jpg",
     "currentDescription": "你位于大厅入口处，面前是一个十字路口",
+    "video": "/2430.mp4",
     "text": "我选择继续向前走，因为前方走廊更宽敞"
   },
   {
@@ -45,7 +46,30 @@
     ],
     "currentImage": "/images/1/current2.jpg",
     "currentDescription": "你现在在走廊中间，两侧都有岔路",
-    "video": "/videos/path_1_to_2.mp4",
+    "video": "/2430.mp4",
+    "text": "这里有两个选择，我需要帮助决定接下来往哪个方向走？"
+  },
+  {
+    "type": 0,
+    "imagesCandidate": [
+      {
+        "path": "/images/1/point4.jpg",
+        "description": "左转"
+      },
+      {
+        "path": "/images/1/point5.jpg",
+        "description": "右转"
+      }
+    ],
+    "imagesSurrounding": [
+      "/images/1/surrounding5.jpg",
+      "/images/1/surrounding6.jpg",
+      "/images/1/surrounding7.jpg",
+      "/images/1/surrounding8.jpg"
+    ],
+    "currentImage": "/images/1/current2.jpg",
+    "currentDescription": "你现在在走廊中间，两侧都有岔路",
+    "video": "/2430.mp4",
     "text": "这里有两个选择，我需要帮助决定接下来往哪个方向走？"
   }
 ] 

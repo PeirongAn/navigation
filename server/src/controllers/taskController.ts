@@ -17,9 +17,9 @@ export async function handleTaskStart(ws: WebSocket, payload: string) {
     }
 
     // 任务完成
-    ws.send(JSON.stringify({
-      type: 'finish',
-    }));
+    // ws.send(JSON.stringify({
+    //   type: 'finish',
+    // }));
   } catch (error) {
     console.error('处理任务时出错:', error);
     ws.send(JSON.stringify({

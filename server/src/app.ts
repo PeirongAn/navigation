@@ -5,6 +5,8 @@ import path from 'path';
 import cors from 'cors';
 import { setupWebSocket } from './websocket';
 import { navigationRouter } from './routes/navigation';
+import ratingRoutes from './routes/rating';
+import { initDatabase } from './database';
 
 const app = express();
 const server = createServer(app);
@@ -24,9 +26,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // 路由
 app.use('/api/navigation', navigationRouter);
+app.use('/api/ratings', ratingRoutes);
 
 // WebSocket设置
 setupWebSocket(wss);
+
+// 初始化数据库
+initDatabase();
 
 // 启动服务器，监听所有网络接口
 const PORT = Number(process.env.PORT) || 8080;
