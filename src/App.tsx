@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Layout, Switch, Button, ConfigProvider } from 'antd';
-import { BulbOutlined, BulbFilled, BugOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Layout, Switch, Button, ConfigProvider, Modal, Image } from 'antd';
+import { BulbOutlined, BulbFilled, BugOutlined, GlobalOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import TaskSelector from './components/LeftPanel/TaskSelector';
@@ -17,6 +17,7 @@ const AppContent: React.FC = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { language, toggleLanguage } = useLanguage();
   const [debugVisible, setDebugVisible] = useState(false);
+  const [isExampleVisible, setIsExampleVisible] = useState(false);
 
   return (
     <Layout className={`h-screen flex flex-col ${isDarkMode ? 'bg-[#141414]' : 'bg-white'}`}>
@@ -33,6 +34,12 @@ const AppContent: React.FC = () => {
         
         {/* 主题切换开关 */}
         <div className="flex items-center gap-4">
+          <Button
+              icon={<QuestionCircleOutlined />}
+              onClick={() => setIsExampleVisible(true)}
+              className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'}
+              type="link"
+            />
           <Button
             type="text"
             icon={<GlobalOutlined />}
@@ -74,6 +81,25 @@ const AppContent: React.FC = () => {
         visible={debugVisible}
         onClose={() => setDebugVisible(false)}
       />
+      <Modal
+        title={"注意事项"}
+        open={isExampleVisible}
+        onCancel={() => setIsExampleVisible(false)}
+        footer={null}
+        centered
+        className={isDarkMode ? 'ant-modal-dark' : ''}
+      >
+        {/* 添加一个富文本提示*/}
+        <div className="text-sm text-gray-500">
+          请参考以下示例输入：
+        </div>
+        <Image
+          src="/input_example.png"
+          alt="Input Example"
+          className="w-full"
+          preview={false}
+        />
+      </Modal>
     </Layout>
   );
 };

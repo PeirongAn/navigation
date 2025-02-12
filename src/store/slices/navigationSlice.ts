@@ -122,6 +122,12 @@ const navigationSlice = createSlice({
       state.currentTimestamp = action.payload;
       saveToLocalStorage(state);
     },
+    resetTask: (state) => {
+      state.taskId = null;
+      state.taskStatus = '未选择';
+      state.taskStarted = false;
+      saveToLocalStorage(state);
+    },
     clearNavigationInfos: (state) => {
       state.navigationInfos = [];
       state.currentTimestamp = null;
@@ -145,6 +151,7 @@ const navigationSlice = createSlice({
       saveToLocalStorage(state);
     },
     setTaskId: (state, action: PayloadAction<string>) => {
+      console.log('setTaskId', action.payload);
       state.taskId = action.payload;
       state.taskStatus = '未开始';
       saveToLocalStorage(state);
@@ -152,6 +159,7 @@ const navigationSlice = createSlice({
     clearTask: (state) => {
       state.taskId = null;
       state.taskStatus = '未选择';
+      state.taskStarted = false;
       saveToLocalStorage(state);
     },
   },
@@ -166,6 +174,7 @@ export const {
   stopTask,
   setTaskId,
   clearTask,
+  resetTask,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer; 

@@ -28,6 +28,7 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [startIndex, setStartIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isImagesExpanded, setIsImagesExpanded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isDarkMode } = useTheme();
 
@@ -116,86 +117,97 @@ const NavigationInfo: React.FC<NavigationInfoProps> = ({
             <div className={`rounded p-3 shadow-md ${
               isDarkMode ? 'bg-[#1f1f1f]' : 'bg-white'
             }`}>
-              {/* 可选点图片列表 - 轮播样式 */}
+              {/* 可选点图片列表 - 可折叠 */}
               <div className="mb-4">
-                <div className={`mb-2 ${
-                  isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
-                }`}>
-                  可选点
-                </div>
-                <div className="relative">
-                  {/* 左箭头 */}
-                  {canScrollPrev && (
-                    <button 
-                      className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 
-                        ${isDarkMode ? 
-                          'bg-[#262626] hover:bg-[#303030] text-[#8c8c8c]' : 
-                          'bg-white hover:bg-gray-100 text-gray-600'
-                        } rounded-full p-2 shadow-md transition-colors`}
-                      onClick={handlePrevImage}
-                    >
-                      <LeftOutlined className="text-lg" />
-                    </button>
+                <div 
+                  className={`flex items-center gap-2 cursor-pointer mb-2 ${
+                    isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
+                  }`}
+                  onClick={() => setIsImagesExpanded(!isImagesExpanded)}
+                >
+                  {isImagesExpanded ? (
+                    <RightOutlined className="rotate-90 transition-transform" />
+                  ) : (
+                    <RightOutlined className="transition-transform" />
                   )}
-                  
-                  {/* 图片列表 */}
-                  <div className="grid grid-cols-4 gap-4">
-                    {visibleImages.map(({path, description}, i) => (
-                      <div key={startIndex + i} className={`border rounded ${
-                        isDarkMode ? 'border-[#303030]' : 'border-gray-200'
-                      }`}>
-                        <div 
-                          className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'} cursor-pointer`}
-                          onClick={() => setSelectedImage(path)}
-                        >
-                          <img 
-                            src={`/resource${path}`}
-                            alt={`可选点 ${startIndex + i + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className={`text-center py-1 border-t ${
-                          isDarkMode ? 
-                            'border-[#303030] text-[#8c8c8c]' : 
-                            'border-gray-200 text-gray-500'
+                  <span>可选点 ({imagesCandidate.length})</span>
+                </div>
+                
+                {isImagesExpanded && (
+                  <div className="relative">
+                    {/* 左箭头 */}
+                    {canScrollPrev && (
+                      <button 
+                        className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 
+                          ${isDarkMode ? 
+                            'bg-[#262626] hover:bg-[#303030] text-[#8c8c8c]' : 
+                            'bg-white hover:bg-gray-100 text-gray-600'
+                          } rounded-full p-2 shadow-md transition-colors`}
+                        onClick={handlePrevImage}
+                      >
+                        <LeftOutlined className="text-lg" />
+                      </button>
+                    )}
+                    
+                    {/* 图片列表 */}
+                    <div className="grid grid-cols-4 gap-4">
+                      {visibleImages.map(({path, description}, i) => (
+                        <div key={startIndex + i} className={`border rounded ${
+                          isDarkMode ? 'border-[#303030]' : 'border-gray-200'
                         }`}>
-                          {description}
-                        </div>
-                      </div>
-                    ))}
-                    {/* 填充空白格子保持布局 */}
-                    {visibleImages.length < IMAGES_PER_PAGE && 
-                      Array(IMAGES_PER_PAGE - visibleImages.length)
-                        .fill(null)
-                        .map((_, i) => (
-                          <div key={`empty-${i}`} className={`border rounded ${
-                            isDarkMode ? 'border-[#303030]' : 'border-gray-200'
-                          } opacity-0`}>
-                            <div className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`} />
-                            <div className={`text-center py-1 border-t ${
-                              isDarkMode ? 
-                                'border-[#303030] text-[#8c8c8c]' : 
-                                'border-gray-200 text-gray-500'
-                            }`}>空</div>
+                          <div 
+                            className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'} cursor-pointer`}
+                            onClick={() => setSelectedImage(path)}
+                          >
+                            <img 
+                              src={`/resource${path}`}
+                              alt={`可选点 ${startIndex + i + 1}`}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
-                        ))
-                    }
-                  </div>
+                          <div className={`text-center py-1 border-t ${
+                            isDarkMode ? 
+                              'border-[#303030] text-[#8c8c8c]' : 
+                              'border-gray-200 text-gray-500'
+                          }`}>
+                            {description}
+                          </div>
+                        </div>
+                      ))}
+                      {/* 填充空白格子保持布局 */}
+                      {visibleImages.length < IMAGES_PER_PAGE && 
+                        Array(IMAGES_PER_PAGE - visibleImages.length)
+                          .fill(null)
+                          .map((_, i) => (
+                            <div key={`empty-${i}`} className={`border rounded ${
+                              isDarkMode ? 'border-[#303030]' : 'border-gray-200'
+                            } opacity-0`}>
+                              <div className={`h-24 ${isDarkMode ? 'bg-[#262626]' : 'bg-gray-50'}`} />
+                              <div className={`text-center py-1 border-t ${
+                                isDarkMode ? 
+                                  'border-[#303030] text-[#8c8c8c]' : 
+                                  'border-gray-200 text-gray-500'
+                              }`}>空</div>
+                            </div>
+                          ))
+                      }
+                    </div>
 
-                  {/* 右箭头 */}
-                  {canScrollNext && (
-                    <button 
-                      className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 
-                        ${isDarkMode ? 
-                          'bg-[#262626] hover:bg-[#303030] text-[#8c8c8c]' : 
-                          'bg-white hover:bg-gray-100 text-gray-600'
-                        } rounded-full p-2 shadow-md transition-colors`}
-                      onClick={handleNextImage}
-                    >
-                      <RightOutlined className="text-lg" />
-                    </button>
-                  )}
-                </div>
+                    {/* 右箭头 */}
+                    {canScrollNext && (
+                      <button 
+                        className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 
+                          ${isDarkMode ? 
+                            'bg-[#262626] hover:bg-[#303030] text-[#8c8c8c]' : 
+                            'bg-white hover:bg-gray-100 text-gray-600'
+                          } rounded-full p-2 shadow-md transition-colors`}
+                        onClick={handleNextImage}
+                      >
+                        <RightOutlined className="text-lg" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* 视频预览部分 - 始终显示区域 */}

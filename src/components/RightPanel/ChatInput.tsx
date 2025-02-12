@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Input, Button } from 'antd';
+import { Input, Button, Modal, Image } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { addMessage } from '../../store/slices/chatSlice';
 import { RootState } from '../../store';
 import { useTheme } from '../../contexts/ThemeContext';
 import { wsService } from '../../services/websocket';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { messages } from '../../locales';
 
 interface ChatInputProps {
   onSend?: () => void;
@@ -14,6 +17,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const [message, setMessage] = useState('');
   const dispatch = useDispatch();
   const { isDarkMode } = useTheme();
+  const { language } = useLanguage();
+  const t = messages[language].chat;
   // 获取当前时间戳
   const currentTimestamp = useSelector((state: RootState) => state.navigation.currentTimestamp);
   
@@ -68,20 +73,23 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
             disabled:bg-opacity-50 disabled:cursor-not-allowed
           `}
         />
-        <Button 
-          type="primary"
-          onClick={handleSend}
-          className={`whitespace-nowrap ${
-            isDarkMode ? 
-              'bg-[#177ddc] hover:bg-[#1765ad] border-[#177ddc]' :
-              'bg-[#1890ff] hover:bg-[#40a9ff] border-[#1890ff]'
-          } text-white`}
-          disabled={!canSendMessage}
-        >
-          发送
-        </Button>
-      </div>
       
+          <Button 
+            type="primary"
+            onClick={handleSend}
+            className={`whitespace-nowrap ${
+              isDarkMode ? 
+                'bg-[#177ddc] hover:bg-[#1765ad] border-[#177ddc]' :
+                'bg-[#1890ff] hover:bg-[#40a9ff] border-[#1890ff]'
+            } text-white`}
+            disabled={!canSendMessage}
+          >
+            {t.send}
+          </Button>
+       
+      </div>
+
+
     </div>
   );
 };

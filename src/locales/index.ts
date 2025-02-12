@@ -26,6 +26,10 @@ export const messages = {
       noImage: 'No Image',
       noDescription: 'No Description',
     },
+    chat: {
+      send: 'Send',
+      exampleTitle: 'Example Response',
+    },
   },
   zh: {
     appTitle: 'AI导航助手',
@@ -53,6 +57,10 @@ export const messages = {
       envDescription: '环境描述',
       noImage: '暂无图片',
       noDescription: '暂无描述',
+    },
+    chat: {
+      send: '发送',
+      exampleTitle: '示例回复',
     },
   },
 };

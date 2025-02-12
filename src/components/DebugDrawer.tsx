@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Drawer, Button, Tag, Modal, Table, Input, Space, message } from 'antd';
 import { useTheme } from '../contexts/ThemeContext';
 import { wsService } from '../services/websocket';
-import { clearNavigationInfos } from '../store/slices/navigationSlice';
+import { clearNavigationInfos, resetTask } from '../store/slices/navigationSlice';
 import { DeleteOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
 import { useLanguage } from '../contexts/LanguageContext';
 import { messages } from '../locales';
@@ -197,7 +197,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
           <Button 
             type="link"
             icon={<DeleteOutlined />}
-            onClick={() => dispatch(clearNavigationInfos())}
+            onClick={() => {dispatch(clearNavigationInfos()); dispatch(resetTask());}}
             className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'}
           >
             {t.clearNavigation}

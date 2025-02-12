@@ -12,12 +12,10 @@ const { Option } = Select;
 const TaskSelector: React.FC = () => {
   const dispatch = useDispatch();
   const { isDarkMode } = useTheme();
-  const { taskId, taskStatus, taskStarted } = useSelector((state: RootState) => ({
-    taskId: state.navigation.taskId,
-    taskStatus: state.navigation.taskStatus,
-    taskStarted: state.navigation.taskStarted
-  }));
-
+  const taskId = useSelector((state: RootState) => state.navigation.taskId);
+  const taskStatus = useSelector((state: RootState) => state.navigation.taskStatus);
+  const taskStarted = useSelector((state: RootState) => state.navigation.taskStarted);
+ 
   // 使用真实任务数据
   const taskOptions = (window.taskInfos || []).map(info => ({
     value: info.id,
@@ -31,6 +29,16 @@ const TaskSelector: React.FC = () => {
       taskOptions.find(option => option.value === taskId)?.description || '' : 
       '';
   });
+
+  // 监听 taskId 变化，更新 description
+  useEffect(() => {
+    if (taskId) {
+      const description = taskOptions.find(option => option.value === taskId)?.description || '';
+      setDescription(description);
+    }else {
+      setDescription('');
+    }
+  }, [taskId, taskOptions]);
 
   useEffect(() => {
     wsService.addMessageHandler('finish', () => {
@@ -48,8 +56,8 @@ const TaskSelector: React.FC = () => {
   }, [isDarkMode]);
 
   const handleTaskChange = (value: string) => {
+    console.log('handleTaskChange', value);
     dispatch(setTaskId(value));
-    setDescription(taskOptions.find(option => option.value === value)?.description || '');
     dispatch(clearNavigationInfos());
     dispatch(clearMessages());
   };
