@@ -4,6 +4,7 @@ import { Modal } from 'antd';
 import { addNavigationInfo } from '../store/slices/navigationSlice';
 import { wsService } from '../services/websocket';
 import { useTheme } from '../contexts/ThemeContext';
+import { setIsSending } from 'store/slices/chatSlice';
 
 const WebSocketClient: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ const WebSocketClient: React.FC = () => {
     // 添加导航信息处理器
     const handleNavigation = (navigationInfo: any) => {
       dispatch(addNavigationInfo(navigationInfo));
+      dispatch(setIsSending(false));
     };
 
     // 连接WebSocket

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Input, Button, Modal, Image } from 'antd';
+import { Input, Button} from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessage } from '../../store/slices/chatSlice';
+import { addMessage, setIsSending } from '../../store/slices/chatSlice';
 import { RootState } from '../../store';
 import { useTheme } from '../../contexts/ThemeContext';
 import { wsService } from '../../services/websocket';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { messages } from '../../locales';
 
@@ -20,16 +19,15 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const { language } = useLanguage();
   const t = messages[language].chat;
   // 获取当前时间戳
-  const currentTimestamp = useSelector((state: RootState) => state.navigation.currentTimestamp);
+  // const currentTimestamp = useSelector((state: RootState) => state.navigation.currentTimestamp);
   
   // 获取导航信息列表
   const navigationInfos = useSelector((state: RootState) => state.navigation.navigationInfos);
   // 获取任务状态
   const taskStarted = useSelector((state: RootState) => state.navigation.taskStarted);
-  
-
+  const isSending = useSelector((state: RootState) => state.chat.isSending);
   // 判断是否可以发送消息
-  const canSendMessage = taskStarted && navigationInfos.length > 0  &&
+  const canSendMessage = !isSending && taskStarted && navigationInfos.length > 0  &&
 
     navigationInfos[navigationInfos.length - 1].type === 1;
 
@@ -40,11 +38,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
     wsService.sendMessage('user_input', message.trim());
     
     // 添加到本地聊天记录
-    dispatch(addMessage({message: message.trim(), timestamp: currentTimestamp || 0}));
+    dispatch(addMessage({message: message.trim(), timestamp: navigationInfos[navigationInfos.length - 1].timestamp + 1}));
     setMessage('');
-    
     // 触发发送回调
     onSend?.();
+    dispatch(setIsSending(true));
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

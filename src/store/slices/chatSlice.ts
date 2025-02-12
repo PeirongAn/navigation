@@ -3,6 +3,7 @@ import { ChatState, ChatMessage } from '../../types';
 
 const initialState: ChatState = {
   messages: [],
+  isSending: false
 };
 
 
@@ -19,12 +20,14 @@ const chatSlice = createSlice({
       };
       state.messages.push(newMessage);
     },
-    
+    setIsSending: (state, action: PayloadAction<boolean>) => {
+      state.isSending = action.payload;
+    },
     clearMessages: (state) => {
       state.messages = [];
     }
   }
 });
 
-export const { addMessage,  clearMessages } = chatSlice.actions;
+export const { addMessage,  clearMessages, setIsSending } = chatSlice.actions;
 export default chatSlice.reducer; 
