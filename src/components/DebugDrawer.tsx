@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Drawer, Button, Tag, Modal, Table, Input, Space, message } from 'antd';
 import { useTheme } from '../contexts/ThemeContext';
 import { wsService } from '../services/websocket';
+import { clearNavigationInfos } from '../store/slices/navigationSlice';
 import { DeleteOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
+import { useLanguage } from '../contexts/LanguageContext';
+import { messages } from '../locales';
+import { useDispatch } from 'react-redux';
 
 interface TaskInfo {
   id: string;
@@ -23,6 +27,9 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
   const [taskInfos, setTaskInfos] = useState<TaskInfo[]>([]);
   const [editingTask, setEditingTask] = useState<TaskInfo | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const { language } = useLanguage();
+  const t = messages[language].debugPanel;
+  const dispatch = useDispatch();
 
   // 加载任务信息
   const loadTaskInfos = () => {
@@ -163,7 +170,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
 
   return (
     <Drawer
-      title="调试面板"
+      title={t.title}
       placement="right"
       onClose={onClose}
       open={visible}
@@ -172,9 +179,9 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
     >
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <span>WebSocket状态:</span>
+          <span>{t.wsStatus}:</span>
           <Tag color={isConnected ? 'success' : 'error'}>
-            {isConnected ? '已连接' : '未连接'}
+            {isConnected ? t.connected : t.disconnected}
           </Tag>
         </div>
         <div className="flex justify-between items-center">
@@ -185,13 +192,21 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
               setIsTaskModalVisible(true);
             }}
           >
-            任务编辑
+            {t.taskEditor}
+          </Button>
+          <Button 
+            type="link"
+            icon={<DeleteOutlined />}
+            onClick={() => dispatch(clearNavigationInfos())}
+            className={isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'}
+          >
+            {t.clearNavigation}
           </Button>
         </div>
         <div className="flex justify-between">
-          <span>消息记录:</span>
+          <span>{t.messageLogs}:</span>
           <Button size="small" onClick={() => wsService.clearLogs()}>
-            清空
+            {t.clear}
           </Button>
         </div>
         <div className="flex-1 overflow-auto">
@@ -217,7 +232,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
       </div>
 
       <Modal
-        title="任务列表"
+        title={t.taskList}
         open={isTaskModalVisible}
         onCancel={() => setIsTaskModalVisible(false)}
         footer={[
@@ -227,7 +242,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
             icon={<ExportOutlined />}
             onClick={exportTaskInfos}
           >
-            导出
+            {t.export}
           </Button>
         ]}
         width={800}
@@ -242,7 +257,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
       </Modal>
 
       <Modal
-        title="编辑任务"
+        title={t.editTask}
         open={isEditModalVisible}
         onOk={handleSaveEdit}
         onCancel={() => {
@@ -253,7 +268,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
         {editingTask && (
           <div className="space-y-4">
             <div>
-              <div className="mb-2">ID</div>
+              <div className="mb-2">{t.id}</div>
               <Input 
                 value={editingTask.id} 
                 onChange={e => setEditingTask({
@@ -263,7 +278,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
               />
             </div>
             <div>
-              <div className="mb-2">中文描述</div>
+              <div className="mb-2">{t.chineseDesc}</div>
               <Input.TextArea 
                 value={editingTask.descriptionZh} 
                 onChange={e => setEditingTask({
@@ -274,7 +289,7 @@ const DebugDrawer: React.FC<Props> = ({ visible, onClose }) => {
               />
             </div>
             <div>
-              <div className="mb-2">英文描述</div>
+              <div className="mb-2">{t.englishDesc}</div>
               <Input.TextArea 
                 value={editingTask.descriptionEn} 
                 onChange={e => setEditingTask({

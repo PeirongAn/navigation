@@ -17,7 +17,7 @@ const EnvironmentView: React.FC = () => {
 
   // 根据当前时间戳获取对应的导航信息
   const currentInfo = useMemo(() => {
-    return navigationInfos.find(info => info.timestamp === currentTimestamp) || navigationInfos[navigationInfos.length - 1];
+    return navigationInfos.find((info: { timestamp: any; }) => info.timestamp === currentTimestamp) || navigationInfos[navigationInfos.length - 1];
   }, [navigationInfos, currentTimestamp]);
 
   // 当前显示的图片
@@ -44,7 +44,7 @@ const EnvironmentView: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
-    <Card className={`flex-1 flex flex-col ${
+    <Card className={`flex-1 flex flex-col overflow-y-auto ${
       isDarkMode ? 'bg-[#1f1f1f] border-[#303030]' : 'bg-white border-gray-200'
     }`}>
       <div className={`text-lg mb-2 ${
@@ -95,7 +95,7 @@ const EnvironmentView: React.FC = () => {
 
           {/* 图片列表 */}
           <div className="grid grid-cols-4 gap-4">
-            {visibleImages.map((image, i) => (
+            {visibleImages.map((image: React.SetStateAction<string | null>, i: number) => (
               <div key={startIndex + i} className={`border rounded ${
                 isDarkMode ? 'border-[#303030]' : 'border-gray-200'
               }`}>
@@ -161,7 +161,7 @@ const EnvironmentView: React.FC = () => {
         width={800}
         centered
         className={isDarkMode ? 'ant-modal-dark' : ''}
-        title={`周边环境图片 ${selectedImage ? visibleImages.findIndex(img => img === selectedImage) + 1 : ''}`}
+        title={`周边环境图片 ${selectedImage ? visibleImages.findIndex((img: string) => img === selectedImage) + 1 : ''}`}
       >
         {selectedImage && (
           <div className={`flex items-center justify-center ${

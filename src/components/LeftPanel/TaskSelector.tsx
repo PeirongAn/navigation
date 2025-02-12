@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Select, Button, Input, Tag, Modal } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '../../contexts/ThemeContext';
-import { clearNavigationInfos, startTask, stopTask } from '../../store/slices/navigationSlice';
+import { clearNavigationInfos, startTask, stopTask, setTaskId } from '../../store/slices/navigationSlice';
 import { wsService } from '../../services/websocket';
 import { clearMessages } from '../../store/slices/chatSlice';
+import { RootState } from '../../store';
 
 const { Option } = Select;
 
-type TaskStatus = '未选择' | '未开始' | '进行中' | '已结束';
-
 const TaskSelector: React.FC = () => {
-  const [taskId, setTaskId] = useState<string>();
-  const [description, setDescription] = useState('');
-  const [disabled, setDisabled] = useState(false);
-  const [status, setStatus] = useState<TaskStatus>('未选择');
   const dispatch = useDispatch();
   const { isDarkMode } = useTheme();
+  const { taskId, taskStatus, taskStarted } = useSelector((state: RootState) => ({
+    taskId: state.navigation.taskId,
+    taskStatus: state.navigation.taskStatus,
+    taskStarted: state.navigation.taskStarted
+  }));
 
   // 使用真实任务数据
   const taskOptions = (window.taskInfos || []).map(info => ({
@@ -25,10 +25,15 @@ const TaskSelector: React.FC = () => {
     description: info.descriptionEn
   }));
 
+  const [description, setDescription] = useState(() => {
+    // 初始化时从 taskId 加载描述
+    return taskId ? 
+      taskOptions.find(option => option.value === taskId)?.description || '' : 
+      '';
+  });
+
   useEffect(() => {
     wsService.addMessageHandler('finish', () => {
-      setDisabled(false);
-      setStatus('已结束');
       dispatch(stopTask());
       Modal.success({
         title: '任务完成',
@@ -43,9 +48,8 @@ const TaskSelector: React.FC = () => {
   }, [isDarkMode]);
 
   const handleTaskChange = (value: string) => {
-    setTaskId(value);
+    dispatch(setTaskId(value));
     setDescription(taskOptions.find(option => option.value === value)?.description || '');
-    setStatus('未开始');
     dispatch(clearNavigationInfos());
     dispatch(clearMessages());
   };
@@ -63,16 +67,13 @@ const TaskSelector: React.FC = () => {
       }
       
       dispatch(clearNavigationInfos());
-      wsService.sendMessage('start_task', taskId );
+      wsService.sendMessage('start_task', taskId);
       dispatch(startTask(taskId));
-      setDisabled(true);
-      setStatus('进行中');
     }
   };
 
-
   const getStatusColor = () => {
-    switch (status) {
+    switch (taskStatus) {
       case '未选择': return isDarkMode ? 'gray' : 'default';
       case '未开始': return 'blue';
       case '进行中': return 'orange';
@@ -89,28 +90,30 @@ const TaskSelector: React.FC = () => {
       bodyStyle={{ padding: '12px' }}
     >
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <div className={`font-bold w-24 ${
-            isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-600'
-          }`}>
-            任务ID选择
+        {!taskStarted && (
+          <div className="flex items-center gap-4">
+            <div className={`font-bold w-24 ${
+              isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-600'
+            }`}>
+              任务ID选择
+            </div>
+            <Select
+              placeholder="请选择任务ID"
+              className="flex-1"
+              value={taskId}
+              onChange={handleTaskChange}
+              disabled={taskStarted}
+              dropdownStyle={{ minWidth: '200px' }}
+              getPopupContainer={(trigger) => trigger.parentElement!}
+            >
+              {taskOptions.map(option => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
           </div>
-          <Select
-            placeholder="请选择任务ID"
-            className="flex-1"
-            value={taskId}
-            onChange={handleTaskChange}
-            disabled={disabled}
-            dropdownStyle={{ minWidth: '200px' }}
-            getPopupContainer={(trigger) => trigger.parentElement!}
-          >
-            {taskOptions.map(option => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
-          </Select>
-        </div>
+        )}
         <div className="flex items-center gap-4">
           <div className={`font-bold w-24 ${
             isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-600'
@@ -137,7 +140,7 @@ const TaskSelector: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 flex-1">
             <Tag color={getStatusColor()}>
-              {status}
+              {taskStatus}
             </Tag>
           </div>
         </div>
@@ -148,19 +151,14 @@ const TaskSelector: React.FC = () => {
               'bg-[#177ddc] hover:bg-[#1765ad] border-[#177ddc]' : 
               'bg-[#1890ff] hover:bg-[#40a9ff] border-[#1890ff]'
           } text-white`}
-          disabled={!taskId || disabled}
+          disabled={!taskId || taskStarted}
           onClick={handleStartTask}
         >
-          {status === '已结束' ? '重新开始' : '开始执行'}
+          {taskStatus === '已结束' ? '重新开始' : '开始执行'}
         </Button>
-
-        
-      
-        
       </div>
     </Card>
   );
 };
-
 
 export default TaskSelector; 

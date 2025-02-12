@@ -49,35 +49,39 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
     }
   };
 
+
   return (
-    <div className="flex gap-2">
-      <Input.TextArea 
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder={canSendMessage ? "请输入消息..." : `${taskStarted ? '等待Agent提问...' : '当前任务已结束，请选择其他任务'}`}
-        autoSize={{ minRows: 1, maxRows: 4 }}
-        onKeyPress={handleKeyPress}
-        disabled={!canSendMessage}
-        className={`
-          ${isDarkMode ? 
-            'bg-[#262626] border-[#303030] text-white hover:border-[#177ddc] focus:border-[#177ddc]' :
-            'bg-white border-gray-300 text-gray-800 hover:border-[#1890ff] focus:border-[#1890ff]'
-          }
-          disabled:bg-opacity-50 disabled:cursor-not-allowed
-        `}
-      />
-      <Button 
-        type="primary"
-        onClick={handleSend}
-        className={`whitespace-nowrap ${
-          isDarkMode ? 
-            'bg-[#177ddc] hover:bg-[#1765ad] border-[#177ddc]' :
-            'bg-[#1890ff] hover:bg-[#40a9ff] border-[#1890ff]'
-        } text-white`}
-        disabled={!canSendMessage}
-      >
-        发送
-      </Button>
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2">
+        <Input.TextArea 
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder={canSendMessage ? "请输入消息..." : `${taskStarted ? '等待Agent提问...' : '当前任务已结束，请选择其他任务'}`}
+          autoSize={{ minRows: 1, maxRows: 4 }}
+          onKeyPress={handleKeyPress}
+          disabled={!canSendMessage}
+          className={`
+            ${isDarkMode ? 
+              'bg-[#262626] border-[#303030] text-white hover:border-[#177ddc] focus:border-[#177ddc]' :
+              'bg-white border-gray-300 text-gray-800 hover:border-[#1890ff] focus:border-[#1890ff]'
+            }
+            disabled:bg-opacity-50 disabled:cursor-not-allowed
+          `}
+        />
+        <Button 
+          type="primary"
+          onClick={handleSend}
+          className={`whitespace-nowrap ${
+            isDarkMode ? 
+              'bg-[#177ddc] hover:bg-[#1765ad] border-[#177ddc]' :
+              'bg-[#1890ff] hover:bg-[#40a9ff] border-[#1890ff]'
+          } text-white`}
+          disabled={!canSendMessage}
+        >
+          发送
+        </Button>
+      </div>
+      
     </div>
   );
 };

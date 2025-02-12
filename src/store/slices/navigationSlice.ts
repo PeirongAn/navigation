@@ -23,6 +23,8 @@ interface NavigationState {
   navigationInfos: NavigationInfo[];
   currentTimestamp: number | null;
   taskStarted: boolean;
+  taskId: string | null;
+  taskStatus: '未选择' | '未开始' | '进行中' | '已结束';
 }
 
 
@@ -77,11 +79,33 @@ const initialState: NavigationState = {
   navigationInfos: [],
   currentTimestamp: null,
   taskStarted: false,
+  taskId: null,
+  taskStatus: '未选择',
+};
+
+const loadFromLocalStorage = () => {
+  try {
+    const savedState = localStorage.getItem('navigationState');
+    if (savedState) {
+      return JSON.parse(savedState);
+    }
+  } catch (e) {
+    console.warn('Failed to load navigation state:', e);
+  }
+  return initialState;
+};
+
+const saveToLocalStorage = (state: NavigationState) => {
+  try {
+    localStorage.setItem('navigationState', JSON.stringify(state));
+  } catch (e) {
+    console.warn('Failed to save navigation state:', e);
+  }
 };
 
 const navigationSlice = createSlice({
   name: 'navigation',
-  initialState,
+  initialState: loadFromLocalStorage(),
   reducers: {
     addNavigationInfo: (state, action: PayloadAction<NavigationInfoOrigin>) => {
       const timestamp = state.navigationInfos.length + 1;
@@ -90,28 +114,45 @@ const navigationSlice = createSlice({
         id: timestamp.toString(),
         timestamp,
       };
-
       state.navigationInfos.push(navigationInfo);
       state.currentTimestamp = navigationInfo.timestamp;
-      
+      saveToLocalStorage(state);
     },
     setCurrentTimestamp: (state, action: PayloadAction<number>) => {
       state.currentTimestamp = action.payload;
+      saveToLocalStorage(state);
     },
     clearNavigationInfos: (state) => {
       state.navigationInfos = [];
       state.currentTimestamp = null;
+      saveToLocalStorage(state);
     },
     resetToDefault: (state) => {
       state.navigationInfos = defaultNavigationInfos;
       state.currentTimestamp = defaultNavigationInfos[defaultNavigationInfos.length - 1].timestamp;
+      saveToLocalStorage(state);
     },
     startTask: (state, action: PayloadAction<string>) => {
       state.taskStarted = true;
       state.navigationInfos = [];
+      state.taskId = action.payload;
+      state.taskStatus = '进行中';
+      saveToLocalStorage(state);
     },
     stopTask: (state) => {
       state.taskStarted = false;
+      state.taskStatus = '已结束';
+      saveToLocalStorage(state);
+    },
+    setTaskId: (state, action: PayloadAction<string>) => {
+      state.taskId = action.payload;
+      state.taskStatus = '未开始';
+      saveToLocalStorage(state);
+    },
+    clearTask: (state) => {
+      state.taskId = null;
+      state.taskStatus = '未选择';
+      saveToLocalStorage(state);
     },
   },
 });
@@ -123,6 +164,8 @@ export const {
   resetToDefault,
   startTask,
   stopTask,
+  setTaskId,
+  clearTask,
 } = navigationSlice.actions;
 
 export default navigationSlice.reducer; 
