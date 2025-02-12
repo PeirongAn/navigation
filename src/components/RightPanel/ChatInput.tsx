@@ -27,10 +27,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
   const taskStarted = useSelector((state: RootState) => state.navigation.taskStarted);
   const isSending = useSelector((state: RootState) => state.chat.isSending);
   // 判断是否可以发送消息
-  // const canSendMessage = !isSending && taskStarted && navigationInfos.length > 0  &&
+  const canSendMessage = !isSending && taskStarted && navigationInfos.length > 0  &&
 
-  //   navigationInfos[navigationInfos.length - 1].type === 1;
-  const canSendMessage = true;
+    navigationInfos[navigationInfos.length - 1].type === 1;
+  // const canSendMessage = true;
 
   const handleSend = () => {
     if (!message.trim() || !canSendMessage) return;
