@@ -39,7 +39,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
     wsService.sendMessage('user_input', message.trim());
     
     // 添加到本地聊天记录
-    dispatch(addMessage({message: message.trim(), timestamp: navigationInfos[navigationInfos.length - 1].timestamp + 1}));
+    dispatch(addMessage({message: message.trim(), timestamp: navigationInfos[navigationInfos.length - 1].timestamp}));
     setMessage('');
     // 触发发送回调
     onSend?.();
