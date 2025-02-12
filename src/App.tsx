@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Layout, Switch, Button, ConfigProvider, Modal, Image } from 'antd';
-import { BulbOutlined, BulbFilled, BugOutlined, GlobalOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Layout, Switch, Button, ConfigProvider, Modal, Image, Steps } from 'antd';
+import { BulbOutlined, BulbFilled, BugOutlined, GlobalOutlined, QuestionCircleOutlined, ReadOutlined, EnvironmentOutlined, SolutionOutlined } from '@ant-design/icons';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import TaskSelector from './components/LeftPanel/TaskSelector';
@@ -82,23 +82,129 @@ const AppContent: React.FC = () => {
         onClose={() => setDebugVisible(false)}
       />
       <Modal
-        title={"注意事项"}
+        width={1200}
+        title={language === 'en' ? "Instructions" : "注意事项"}
         open={isExampleVisible}
         onCancel={() => setIsExampleVisible(false)}
         footer={null}
         centered
         className={isDarkMode ? 'ant-modal-dark' : ''}
       >
-        {/* 添加一个富文本提示*/}
-        <div className="text-sm text-gray-500">
-          请参考以下示例输入：
+        {/* 步骤条 */}
+        <div className="mb-8">
+          <Steps
+            items={[
+              {
+                title: '理解指令',
+                status: 'finish',
+                icon: <ReadOutlined />,
+                description: '阅读任务目标',
+              },
+              {
+                title: '理解环境',
+                status: 'finish',
+                icon: <EnvironmentOutlined />,
+                description: '观察周围场景',
+              },
+              {
+                title: '理解问题',
+                status: 'finish',
+                icon: <QuestionCircleOutlined />,
+                description: '分析当前情况',
+              },
+              {
+                title: '给出指导',
+                status: 'finish',
+                icon: <SolutionOutlined />,
+                description: '提供导航建议',
+              },
+            ]}
+            className={`${isDarkMode ? 'steps-dark' : ''}`}
+          />
         </div>
-        <Image
-          src="/input_example.png"
-          alt="Input Example"
-          className="w-full"
-          preview={false}
-        />
+
+        {/* 系统说明部分 */}
+        <div className={`mb-6 ${isDarkMode ? 'text-[#d9d9d9]' : 'text-gray-800'}`}>
+          <h3 className={`text-lg font-medium mb-2 ${
+            isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
+          }`}>
+            1. 界面说明
+          </h3>
+          <div className={`text-sm ${isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}`}>
+            任务开始后，智能体将自动开始导航，下图是对应功能说明：
+          </div>
+          <div className={`mt-4 border rounded-lg overflow-hidden ${
+            isDarkMode ? 'border-[#303030]' : 'border-gray-200'
+          }`}>
+            <Image
+              src="/intro.jpeg"
+              alt="introduction"
+              className="w-full"
+              preview={false}
+            />
+          </div>
+        </div>
+
+        {/* 回答问题要求部分 */}
+        <div className={isDarkMode ? 'text-[#d9d9d9]' : 'text-gray-800'}>
+          <h3 className={`text-lg font-medium mb-2 ${
+            isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
+          }`}>
+            2. 回答问题要求
+          </h3>
+          <div className={`text-sm ${isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}`}>
+            仅有当智能体寻求帮助时，用户才需要回答问题
+          </div>
+          <div className={`space-y-2 text-sm ${
+            isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'
+          }`}>
+            <div className="flex items-start gap-2">
+              <span className="font-medium">a.</span>
+              <div>
+                <span className={`font-medium ${
+                  isDarkMode ? 'text-[#49aa19]' : 'text-[#52c41a]'
+                }`}>最期待的回答是：</span>
+                向前走，越过茶几之后右转到卧室（高层的语义信息）
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-medium">b.</span>
+              <div>
+                <span className={`font-medium ${
+                  isDarkMode ? 'text-[#d32029]' : 'text-[#ff4d4f]'
+                }`}>不希望的回答：</span>
+                选择图一。（可选点信息主要是给人看作为辅助信息的，不是真的让人去选择）
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-medium">c.</span>
+              <div>如果真的要只是选择一步，那么一定要复制上面图片的方向描述。</div>
+            </div>
+          </div>
+          
+          <div className={`mt-4 ${isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}`}>
+            具体请参考以下示例输入：
+          </div>
+          <div className={`w-1/2 mx-auto mt-2 border rounded-lg overflow-hidden ${
+            isDarkMode ? 'border-[#303030]' : 'border-gray-200'
+          }`}>
+            <Image
+              src="/input_example.png"
+              alt="Input Example"
+              className="w-full"
+              preview={false}
+            />
+          </div>
+          <h3 className={`text-lg font-medium mb-2 ${
+            isDarkMode ? 'text-[#177ddc]' : 'text-[#1890ff]'
+          }`}>
+            3. 任务结束
+          </h3>
+          <div className={`text-sm ${isDarkMode ? 'text-[#8c8c8c]' : 'text-gray-500'}`}>
+            任务结束后，系统会给出“任务完成”提示，用户可以重新开始或选择其他任务。默认16步（T=16）后任务结束
+          </div>
+         
+        </div>
       </Modal>
     </Layout>
   );
